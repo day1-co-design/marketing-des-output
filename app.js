@@ -211,29 +211,35 @@ function renderList() {
     return;
   }
 
-  const phases = groupBy(selectedItems, (item) => item.phase || "기타");
-
-  els.taskList.innerHTML = [...phases.entries()]
-    .map(
-      ([phase, phaseItems]) => `
-        <section class="phase-section">
-          <div class="phase-heading">
-            <strong>${escapeHtml(phase)}</strong>
-            <span>${phaseItems.length}개</span>
-          </div>
-          ${renderGroupBoards(phaseItems)}
-        </section>
-      `
-    )
-    .join("");
+  els.taskList.innerHTML = `
+    <div class="parallel-board">
+      ${[...groupBy(selectedItems, (item) => item.phase || "기타").entries()]
+        .map(([phase, phaseItems]) => renderPhaseColumn(phase, phaseItems))
+        .join("")}
+    </div>
+  `;
 }
 
-function renderGroupBoards(phaseItems) {
+function renderPhaseColumn(phase, phaseItems) {
+  return `
+    <section class="phase-column">
+      <div class="phase-heading">
+        <strong>${escapeHtml(phase)}</strong>
+        <span>${phaseItems.length}개</span>
+      </div>
+      <div class="group-grid">
+        ${renderGroupColumns(phaseItems)}
+      </div>
+    </section>
+  `;
+}
+
+function renderGroupColumns(phaseItems) {
   return [...groupBy(phaseItems, (item) => item.group || "기타").entries()]
     .map(([group, groupItems]) => {
       const outputGroups = groupBy(groupItems, (item) => item.output || "산출물");
       return `
-        <section class="group-board">
+        <section class="group-column">
           <div class="group-heading">
             <strong>${escapeHtml(group)}</strong>
             <span>${groupItems.length}개</span>
@@ -251,19 +257,34 @@ function renderGroupBoards(phaseItems) {
 
 function renderOutputColumn(output, outputItems) {
   const sizes = unique(outputItems.map((item) => item.size || "-"));
-  const courseMeta =
-    els.courseTypeFilter.value === "전체" || els.courseFormatFilter.value === "전체"
-      ? unique(outputItems.map((item) => `${item.courseType} · ${item.courseFormat}`))
-      : [];
+  const courseTypeMeta = els.courseTypeFilter.value === "전체"
+    ? unique(outputItems.map((item) => item.courseType))
+    : [];
+  const courseFormatMeta = els.courseFormatFilter.value === "전체"
+    ? unique(outputItems.map((item) => item.courseFormat))
+    : [];
 
   return `
     <article class="output-column">
       <h3>${escapeHtml(output)}</h3>
       ${
-        courseMeta.length
-          ? `<div class="meta-stack">${courseMeta
+        courseTypeMeta.length
+          ? `<div class="meta-group">
+              <span class="meta-label">코스 유형</span>
+              <div class="meta-stack">${courseTypeMeta
+                .map((value) => `<span>${escapeHtml(value)}</span>`)
+                .join("")}</div>
+            </div>`
+          : ""
+      }
+      ${
+        courseFormatMeta.length
+          ? `<div class="meta-group">
+              <span class="meta-label">코스 포맷</span>
+              <div class="meta-stack">${courseFormatMeta
               .map((value) => `<span>${escapeHtml(value)}</span>`)
-              .join("")}</div>`
+              .join("")}</div>
+            </div>`
           : ""
       }
       <div class="size-stack">
