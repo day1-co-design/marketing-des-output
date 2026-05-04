@@ -69,7 +69,6 @@ const els = {
   taskCount: document.getElementById("taskCount"),
   taskList: document.getElementById("taskList"),
   managementCount: document.getElementById("managementCount"),
-  managementTable: document.getElementById("managementTable"),
   managementTableHead: document.getElementById("managementTableHead"),
   managementTableBody: document.getElementById("managementTableBody"),
   csvFileInput: document.getElementById("csvFileInput"),
