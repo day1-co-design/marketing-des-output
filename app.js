@@ -53,6 +53,7 @@ const headerMap = new Map(
 const overrideStorageKey = "colosoDesignOutputChecks";
 let overrides = loadOverrides();
 let items = applyOverrides(buildItems(sourceRows));
+let hasUnsavedChanges = false;
 
 const els = {
   siteFilter: document.getElementById("siteFilter"),
@@ -442,10 +443,10 @@ function updateItem(id, field, value) {
     ...(overrides[id] || {}),
     [field]: field === "size" ? value : normalizeCheckValue(value),
   };
-  localStorage.setItem(overrideStorageKey, JSON.stringify(overrides));
   items = applyOverrides(buildItems(sourceRows));
   renderList();
   renderManagementTable();
+  setSaveState("dirty");
 }
 
 function exportCsv() {
@@ -488,9 +489,9 @@ function importCsv(file) {
     });
 
     overrides = nextOverrides;
-    localStorage.setItem(overrideStorageKey, JSON.stringify(overrides));
     items = applyOverrides(buildItems(sourceRows));
     renderAll();
+    setSaveState("dirty");
   };
   reader.readAsText(file);
 }
@@ -539,6 +540,30 @@ function csvEscape(value) {
 
 function normalizeCheckValue(value) {
   return isNo(value) ? "X" : "O";
+}
+
+function setSaveState(state) {
+  els.saveBtn.classList.remove("is-dirty", "is-saved");
+
+  if (state === "dirty") {
+    hasUnsavedChanges = true;
+    els.saveBtn.disabled = false;
+    els.saveBtn.textContent = "저장";
+    els.saveBtn.classList.add("is-dirty");
+    return;
+  }
+
+  if (state === "saved") {
+    hasUnsavedChanges = false;
+    els.saveBtn.disabled = true;
+    els.saveBtn.textContent = "저장됨";
+    els.saveBtn.classList.add("is-saved");
+    return;
+  }
+
+  hasUnsavedChanges = false;
+  els.saveBtn.disabled = true;
+  els.saveBtn.textContent = "저장";
 }
 
 function groupBy(source, keyGetter) {
@@ -611,10 +636,11 @@ els.managementTableBody.addEventListener("change", (event) => {
   updateItem(target.dataset.id, target.dataset.field, target.value);
 });
 els.saveBtn.addEventListener("click", () => {
+  if (!hasUnsavedChanges) return;
   localStorage.setItem(overrideStorageKey, JSON.stringify(overrides));
-  els.saveBtn.textContent = "저장됨";
+  setSaveState("saved");
   window.setTimeout(() => {
-    els.saveBtn.textContent = "저장";
+    setSaveState("clean");
   }, 1200);
 });
 els.tabButtons.forEach((button) => {
@@ -627,3 +653,4 @@ els.tabButtons.forEach((button) => {
 });
 
 renderAll();
+setSaveState("clean");

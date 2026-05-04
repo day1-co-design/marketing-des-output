@@ -145,8 +145,22 @@ h2 {
 }
 
 .save-button {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: #eef1f4;
+  border-color: #d8e0e6;
+  color: #8a97a3;
+  cursor: not-allowed;
+}
+
+.save-button.is-dirty {
+  background: #b78113;
+  border-color: #b78113;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.save-button.is-saved:disabled {
+  background: var(--teal);
+  border-color: var(--teal);
   color: #ffffff;
 }
 
