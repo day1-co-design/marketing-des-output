@@ -111,7 +111,7 @@ h2 {
   background: var(--surface);
   border: 1px solid var(--line);
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 8px;
   padding: 10px;
   position: sticky;
