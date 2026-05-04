@@ -111,11 +111,21 @@ h2 {
   background: var(--surface);
   border: 1px solid var(--line);
   display: flex;
+  justify-content: space-between;
   gap: 8px;
   padding: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
-.tab-button {
+.tab-group {
+  display: flex;
+  gap: 8px;
+}
+
+.tab-button,
+.save-button {
   background: #ffffff;
   border: 1px solid var(--line-strong);
   border-radius: 7px;
@@ -131,6 +141,12 @@ h2 {
 .tab-button.is-active {
   background: var(--teal);
   border-color: var(--teal);
+  color: #ffffff;
+}
+
+.save-button {
+  background: var(--ink);
+  border-color: var(--ink);
   color: #ffffff;
 }
 

@@ -68,6 +68,7 @@ const els = {
   csvFileInput: document.getElementById("csvFileInput"),
   importCsvBtn: document.getElementById("importCsvBtn"),
   exportCsvBtn: document.getElementById("exportCsvBtn"),
+  saveBtn: document.getElementById("saveBtn"),
   tabButtons: document.querySelectorAll("[data-view]"),
   viewPanels: document.querySelectorAll("[data-panel]"),
 };
@@ -608,6 +609,13 @@ els.managementTableBody.addEventListener("change", (event) => {
   const target = event.target;
   if (!target.matches("[data-id][data-field]")) return;
   updateItem(target.dataset.id, target.dataset.field, target.value);
+});
+els.saveBtn.addEventListener("click", () => {
+  localStorage.setItem(overrideStorageKey, JSON.stringify(overrides));
+  els.saveBtn.textContent = "저장됨";
+  window.setTimeout(() => {
+    els.saveBtn.textContent = "저장";
+  }, 1200);
 });
 els.tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
