@@ -391,7 +391,7 @@ h2 {
 }
 
 .management-table {
-  min-width: 1280px;
+  min-width: 1460px;
 }
 
 .is-hidden-row {
@@ -414,6 +414,10 @@ h2 {
 
 .table-select {
   min-width: 58px;
+}
+
+.memo-input {
+  min-width: 180px;
 }
 
 @media (max-width: 720px) {

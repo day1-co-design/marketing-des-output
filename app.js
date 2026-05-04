@@ -43,6 +43,7 @@ const csvColumns = [
   { key: "size", label: "규격" },
   { key: "workIncluded", label: "업무유무" },
   { key: "typeFit", label: "유형적합여부" },
+  { key: "memo", label: "메모" },
 ];
 
 const headerMap = new Map(
@@ -132,6 +133,7 @@ function withDefaults(item) {
   return {
     ...item,
     id: makeId(item),
+    memo: "",
     workIncluded: "O",
     typeFit: "O",
   };
@@ -413,7 +415,7 @@ function renderManagementTable() {
   renderManagementHeader(showLocalizationType);
 
   if (!managedItems.length) {
-    const columnCount = showLocalizationType ? 12 : 11;
+    const columnCount = showLocalizationType ? 13 : 12;
     els.managementTableBody.innerHTML = `<tr><td colspan="${columnCount}" class="empty-state">편집할 업무 항목이 없습니다</td></tr>`;
     return;
   }
@@ -441,6 +443,15 @@ function renderManagementTable() {
           </td>
           <td>${renderEditableSelect(item, "workIncluded")}</td>
           <td>${renderEditableSelect(item, "typeFit")}</td>
+          <td>
+            <input
+              class="table-input memo-input"
+              data-id="${escapeHtml(item.id)}"
+              data-field="memo"
+              placeholder="수정 확인 메모"
+              value="${escapeHtml(item.memo || "")}"
+            />
+          </td>
         </tr>
       `
     )
@@ -462,6 +473,7 @@ function renderManagementHeader(showLocalizationType) {
       <th>규격</th>
       <th>업무유무</th>
       <th>유형적합여부</th>
+      <th>메모</th>
     </tr>
   `;
 }
@@ -486,11 +498,27 @@ function updateItem(id, field, value) {
 
   overrides[id] = {
     ...(overrides[id] || {}),
-    [field]: field === "size" ? value : normalizeCheckValue(value),
+    [field]: ["size", "memo"].includes(field) ? value : normalizeCheckValue(value),
   };
   items = applyOverrides(buildItems(sourceRows));
   renderList();
   renderManagementTable();
+  setSaveState("dirty");
+}
+
+function updateTextField(id, field, value) {
+  if (!["size", "memo"].includes(field)) return;
+
+  const item = items.find((entry) => entry.id === id);
+  if (!item) return;
+
+  item[field] = value;
+  overrides[id] = {
+    ...(overrides[id] || {}),
+    [field]: value,
+  };
+
+  if (field === "size") renderList();
   setSaveState("dirty");
 }
 
@@ -528,6 +556,7 @@ function importCsv(file) {
 
       nextOverrides[record.id] = {
         size: record.size || "",
+        memo: record.memo || "",
         workIncluded: normalizeCheckValue(record.workIncluded || "O"),
         typeFit: normalizeCheckValue(record.typeFit || "O"),
       };
@@ -704,7 +733,13 @@ els.csvFileInput.addEventListener("change", (event) => {
 els.managementTableBody.addEventListener("change", (event) => {
   const target = event.target;
   if (!target.matches("[data-id][data-field]")) return;
+  if (target.matches(".table-input")) return;
   updateItem(target.dataset.id, target.dataset.field, target.value);
+});
+els.managementTableBody.addEventListener("input", (event) => {
+  const target = event.target;
+  if (!target.matches(".table-input[data-id][data-field]")) return;
+  updateTextField(target.dataset.id, target.dataset.field, target.value);
 });
 els.saveBtn.addEventListener("click", () => {
   if (!hasUnsavedChanges) return;
