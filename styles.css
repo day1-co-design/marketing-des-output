@@ -250,8 +250,18 @@ h2 {
   white-space: nowrap;
 }
 
-.dashboard-table td:nth-child(3),
-.management-table td:nth-child(8) {
+.dashboard-table th:first-child,
+.dashboard-table td:first-child,
+.management-table th:first-child,
+.management-table td:first-child {
+  color: var(--muted);
+  font-weight: 800;
+  text-align: center;
+  width: 54px;
+}
+
+.dashboard-table td:nth-child(4),
+.management-table td:nth-child(9) {
   color: var(--ink);
   font-weight: 760;
 }

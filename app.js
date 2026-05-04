@@ -244,6 +244,7 @@ function renderCourseFormatOptions() {
   const site = els.siteFilter.value;
   const language = els.languageFilter.value;
   const courseType = els.courseTypeFilter.value;
+  const localizationType = els.localizationTypeFilter.value;
   fillSelect(
     els.courseFormatFilter,
     unique(
@@ -252,7 +253,8 @@ function renderCourseFormatOptions() {
           (item) =>
             (site === "전체" || item.site === site) &&
             (language === "전체" || item.language === language) &&
-            (courseType === "전체" || item.courseType === courseType)
+            (courseType === "전체" || item.courseType === courseType) &&
+            (localizationType === "전체" || item.localizationType === localizationType)
         )
         .map((item) => item.courseFormat)
     )
@@ -263,7 +265,6 @@ function renderLocalizationTypeOptions() {
   const site = els.siteFilter.value;
   const language = els.languageFilter.value;
   const courseType = els.courseTypeFilter.value;
-  const courseFormat = els.courseFormatFilter.value;
   fillSelect(
     els.localizationTypeFilter,
     unique(
@@ -272,8 +273,7 @@ function renderLocalizationTypeOptions() {
           (item) =>
             (site === "전체" || item.site === site) &&
             (language === "전체" || item.language === language) &&
-            (courseType === "전체" || item.courseType === courseType) &&
-            (courseFormat === "전체" || item.courseFormat === courseFormat)
+            (courseType === "전체" || item.courseType === courseType)
         )
         .map((item) => item.localizationType)
     )
@@ -332,7 +332,7 @@ function isNo(value) {
 
 function renderList() {
   const selectedItems = getSelectedItems();
-  els.selectedScope.textContent = `${els.siteFilter.value} · ${els.languageFilter.value} · ${els.courseTypeFilter.value} · ${els.courseFormatFilter.value} · ${els.localizationTypeFilter.value} · ${els.phaseFilter.value}`;
+  els.selectedScope.textContent = `${els.siteFilter.value} · ${els.languageFilter.value} · ${els.courseTypeFilter.value} · ${els.localizationTypeFilter.value} · ${els.courseFormatFilter.value} · ${els.phaseFilter.value}`;
   els.taskCount.textContent = `${selectedItems.length}개`;
 
   if (!selectedItems.length) {
@@ -349,24 +349,26 @@ function renderDashboardTable(selectedItems) {
       <table class="dashboard-table">
         <thead>
           <tr>
+            <th>번호</th>
             <th>업무 구간</th>
             <th>구분</th>
             <th>업무내용</th>
-            <th>코스 포맷</th>
             <th>현지화 유형</th>
+            <th>코스 포맷</th>
             <th>규격</th>
           </tr>
         </thead>
         <tbody>
           ${selectedItems
             .map(
-              (item) => `
+              (item, index) => `
                 <tr>
+                  <td>${index + 1}</td>
                   <td>${escapeHtml(item.phase)}</td>
                   <td>${escapeHtml(item.group || "-")}</td>
                   <td>${escapeHtml(item.output)}</td>
-                  <td>${escapeHtml(item.courseFormat)}</td>
                   <td>${escapeHtml(item.localizationType || "-")}</td>
+                  <td>${escapeHtml(item.courseFormat)}</td>
                   <td>${escapeHtml(item.size || "-")}</td>
                 </tr>
               `
@@ -383,19 +385,20 @@ function renderManagementTable() {
   els.managementCount.textContent = `${managedItems.length}개`;
 
   if (!managedItems.length) {
-    els.managementTableBody.innerHTML = `<tr><td colspan="11" class="empty-state">편집할 업무 항목이 없습니다</td></tr>`;
+    els.managementTableBody.innerHTML = `<tr><td colspan="12" class="empty-state">편집할 업무 항목이 없습니다</td></tr>`;
     return;
   }
 
   els.managementTableBody.innerHTML = managedItems
     .map(
-      (item) => `
+      (item, index) => `
         <tr class="${isVisible(item) ? "" : "is-hidden-row"}">
+          <td>${index + 1}</td>
           <td>${escapeHtml(item.site)}</td>
           <td>${escapeHtml(item.language)}</td>
           <td>${escapeHtml(item.courseType)}</td>
-          <td>${escapeHtml(item.courseFormat)}</td>
           <td>${escapeHtml(item.localizationType || "-")}</td>
+          <td>${escapeHtml(item.courseFormat)}</td>
           <td>${escapeHtml(item.phase)}</td>
           <td>${escapeHtml(item.group || "-")}</td>
           <td>${escapeHtml(item.output)}</td>
@@ -574,8 +577,8 @@ function renderAll() {
   renderSiteOptions();
   renderLanguageOptions();
   renderCourseTypeOptions();
-  renderCourseFormatOptions();
   renderLocalizationTypeOptions();
+  renderCourseFormatOptions();
   renderFormatOptions();
   renderList();
   renderManagementTable();
@@ -593,34 +596,34 @@ function escapeHtml(value) {
 els.siteFilter.addEventListener("change", () => {
   renderLanguageOptions();
   renderCourseTypeOptions();
-  renderCourseFormatOptions();
   renderLocalizationTypeOptions();
+  renderCourseFormatOptions();
   renderFormatOptions();
   renderList();
   renderManagementTable();
 });
 els.languageFilter.addEventListener("change", () => {
   renderCourseTypeOptions();
-  renderCourseFormatOptions();
   renderLocalizationTypeOptions();
+  renderCourseFormatOptions();
   renderFormatOptions();
   renderList();
   renderManagementTable();
 });
 els.courseTypeFilter.addEventListener("change", () => {
+  renderLocalizationTypeOptions();
   renderCourseFormatOptions();
-  renderLocalizationTypeOptions();
-  renderFormatOptions();
-  renderList();
-  renderManagementTable();
-});
-els.courseFormatFilter.addEventListener("change", () => {
-  renderLocalizationTypeOptions();
   renderFormatOptions();
   renderList();
   renderManagementTable();
 });
 els.localizationTypeFilter.addEventListener("change", () => {
+  renderCourseFormatOptions();
+  renderFormatOptions();
+  renderList();
+  renderManagementTable();
+});
+els.courseFormatFilter.addEventListener("change", () => {
   renderFormatOptions();
   renderList();
   renderManagementTable();
