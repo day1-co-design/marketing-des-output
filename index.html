@@ -19,6 +19,11 @@
         </div>
       </header>
 
+      <nav class="view-tabs" aria-label="화면 전환">
+        <button class="tab-button is-active" type="button" data-view="dashboard">대시보드</button>
+        <button class="tab-button" type="button" data-view="maintenance">운영 기준 편집</button>
+      </nav>
+
       <section class="filter-band" aria-label="업무 조건">
         <div class="control-group">
           <label for="siteFilter">사이트</label>
@@ -42,7 +47,7 @@
         </div>
       </section>
 
-      <section class="task-surface">
+      <section class="task-surface view-panel is-active" data-panel="dashboard">
         <div class="section-heading">
           <div>
             <p class="eyebrow" id="selectedScope"></p>
@@ -51,6 +56,35 @@
           <span class="count-pill" id="taskCount">0개</span>
         </div>
         <div class="task-list" id="taskList"></div>
+      </section>
+
+      <section class="task-surface view-panel" data-panel="maintenance">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Maintenance</p>
+            <h2>운영 기준 편집</h2>
+          </div>
+          <span class="count-pill" id="managementCount">0개</span>
+        </div>
+        <div class="table-wrap">
+          <table class="management-table">
+            <thead>
+              <tr>
+                <th>사이트</th>
+                <th>언어</th>
+                <th>코스 유형</th>
+                <th>코스 포맷</th>
+                <th>업무 구간</th>
+                <th>구분</th>
+                <th>업무내용</th>
+                <th>규격</th>
+                <th>업무유무</th>
+                <th>유형적합여부</th>
+              </tr>
+            </thead>
+            <tbody id="managementTableBody"></tbody>
+          </table>
+        </div>
       </section>
     </main>
 

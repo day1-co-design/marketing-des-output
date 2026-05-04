@@ -106,6 +106,42 @@ h2 {
   padding: 14px;
 }
 
+.view-tabs {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+}
+
+.tab-button {
+  background: #ffffff;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 760;
+  height: 36px;
+  padding: 0 14px;
+}
+
+.tab-button.is-active {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #ffffff;
+}
+
+.view-panel {
+  display: none;
+}
+
+.view-panel.is-active {
+  display: block;
+}
+
 .control-group {
   display: grid;
   gap: 6px;
@@ -268,6 +304,61 @@ h2 {
   color: var(--muted);
   padding: 50px 20px;
   text-align: center;
+}
+
+.table-wrap {
+  overflow: auto;
+  padding: 18px;
+}
+
+.management-table {
+  border-collapse: collapse;
+  min-width: 1280px;
+  width: 100%;
+}
+
+.management-table th,
+.management-table td {
+  border: 1px solid var(--line);
+  font-size: 13px;
+  padding: 9px 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.management-table th {
+  background: #f8fafb;
+  color: var(--muted);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.management-table td:nth-child(7) {
+  color: var(--ink);
+  font-weight: 760;
+  min-width: 170px;
+}
+
+.is-hidden-row {
+  background: #f8fafb;
+  color: var(--muted);
+}
+
+.table-input,
+.table-select {
+  background: #ffffff;
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  color: var(--ink);
+  font: inherit;
+  height: 32px;
+  min-width: 72px;
+  padding: 0 8px;
+  width: 100%;
+}
+
+.table-select {
+  min-width: 58px;
 }
 
 @media (max-width: 720px) {

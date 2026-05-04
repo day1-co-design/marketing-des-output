@@ -63,9 +63,13 @@ const els = {
   selectedScope: document.getElementById("selectedScope"),
   taskCount: document.getElementById("taskCount"),
   taskList: document.getElementById("taskList"),
+  managementCount: document.getElementById("managementCount"),
+  managementTableBody: document.getElementById("managementTableBody"),
   csvFileInput: document.getElementById("csvFileInput"),
   importCsvBtn: document.getElementById("importCsvBtn"),
   exportCsvBtn: document.getElementById("exportCsvBtn"),
+  tabButtons: document.querySelectorAll("[data-view]"),
+  viewPanels: document.querySelectorAll("[data-panel]"),
 };
 
 function buildItems(rows) {
@@ -240,9 +244,12 @@ function renderCourseFormatOptions() {
 }
 
 function getSelectedItems() {
-  const selected = items.filter(
+  return dedupeItems(getFilteredItems().filter(isVisible));
+}
+
+function getFilteredItems() {
+  return items.filter(
     (item) =>
-      isVisible(item) &&
       (els.siteFilter.value === "전체" || item.site === els.siteFilter.value) &&
       (els.languageFilter.value === "전체" || item.language === els.languageFilter.value) &&
       (els.courseTypeFilter.value === "전체" || item.courseType === els.courseTypeFilter.value) &&
@@ -250,8 +257,6 @@ function getSelectedItems() {
         item.courseFormat === els.courseFormatFilter.value) &&
       (els.phaseFilter.value === "전체" || item.phase === els.phaseFilter.value)
   );
-
-  return dedupeItems(selected);
 }
 
 function dedupeItems(source) {
@@ -378,6 +383,70 @@ function renderOutputColumn(output, outputItems) {
   `;
 }
 
+function renderManagementTable() {
+  const managedItems = getFilteredItems();
+  els.managementCount.textContent = `${managedItems.length}개`;
+
+  if (!managedItems.length) {
+    els.managementTableBody.innerHTML = `<tr><td colspan="10" class="empty-state">편집할 업무 항목이 없습니다</td></tr>`;
+    return;
+  }
+
+  els.managementTableBody.innerHTML = managedItems
+    .map(
+      (item) => `
+        <tr class="${isVisible(item) ? "" : "is-hidden-row"}">
+          <td>${escapeHtml(item.site)}</td>
+          <td>${escapeHtml(item.language)}</td>
+          <td>${escapeHtml(item.courseType)}</td>
+          <td>${escapeHtml(item.courseFormat)}</td>
+          <td>${escapeHtml(item.phase)}</td>
+          <td>${escapeHtml(item.group || "-")}</td>
+          <td>${escapeHtml(item.output)}</td>
+          <td>
+            <input
+              class="table-input"
+              data-id="${escapeHtml(item.id)}"
+              data-field="size"
+              value="${escapeHtml(item.size || "")}"
+            />
+          </td>
+          <td>${renderEditableSelect(item, "workIncluded")}</td>
+          <td>${renderEditableSelect(item, "typeFit")}</td>
+        </tr>
+      `
+    )
+    .join("");
+}
+
+function renderEditableSelect(item, field) {
+  const value = normalizeCheckValue(item[field] || "O");
+  return `
+    <select class="table-select" data-id="${escapeHtml(item.id)}" data-field="${field}">
+      ${["O", "X"]
+        .map(
+          (option) =>
+            `<option value="${option}" ${value === option ? "selected" : ""}>${option}</option>`
+        )
+        .join("")}
+    </select>
+  `;
+}
+
+function updateItem(id, field, value) {
+  const item = items.find((entry) => entry.id === id);
+  if (!item) return;
+
+  overrides[id] = {
+    ...(overrides[id] || {}),
+    [field]: field === "size" ? value : normalizeCheckValue(value),
+  };
+  localStorage.setItem(overrideStorageKey, JSON.stringify(overrides));
+  items = applyOverrides(buildItems(sourceRows));
+  renderList();
+  renderManagementTable();
+}
+
 function exportCsv() {
   const csv = [
     csvColumns.map((column) => column.label).join(","),
@@ -412,8 +481,8 @@ function importCsv(file) {
 
       nextOverrides[record.id] = {
         size: record.size || "",
-        workIncluded: record.workIncluded || "",
-        typeFit: record.typeFit || "",
+        workIncluded: normalizeCheckValue(record.workIncluded || "O"),
+        typeFit: normalizeCheckValue(record.typeFit || "O"),
       };
     });
 
@@ -467,6 +536,10 @@ function csvEscape(value) {
   return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
+function normalizeCheckValue(value) {
+  return isNo(value) ? "X" : "O";
+}
+
 function groupBy(source, keyGetter) {
   const groups = new Map();
   source.forEach((item) => {
@@ -484,6 +557,7 @@ function renderAll() {
   renderCourseFormatOptions();
   renderFormatOptions();
   renderList();
+  renderManagementTable();
 }
 
 function escapeHtml(value) {
@@ -501,29 +575,47 @@ els.siteFilter.addEventListener("change", () => {
   renderCourseFormatOptions();
   renderFormatOptions();
   renderList();
+  renderManagementTable();
 });
 els.languageFilter.addEventListener("change", () => {
   renderCourseTypeOptions();
   renderCourseFormatOptions();
   renderFormatOptions();
   renderList();
+  renderManagementTable();
 });
 els.courseTypeFilter.addEventListener("change", () => {
   renderCourseFormatOptions();
   renderFormatOptions();
   renderList();
+  renderManagementTable();
 });
 els.courseFormatFilter.addEventListener("change", () => {
   renderFormatOptions();
   renderList();
+  renderManagementTable();
 });
 els.phaseFilter.addEventListener("change", renderList);
+els.phaseFilter.addEventListener("change", renderManagementTable);
 els.exportCsvBtn.addEventListener("click", exportCsv);
 els.importCsvBtn.addEventListener("click", () => els.csvFileInput.click());
 els.csvFileInput.addEventListener("change", (event) => {
   const [file] = event.target.files || [];
   if (file) importCsv(file);
   event.target.value = "";
+});
+els.managementTableBody.addEventListener("change", (event) => {
+  const target = event.target;
+  if (!target.matches("[data-id][data-field]")) return;
+  updateItem(target.dataset.id, target.dataset.field, target.value);
+});
+els.tabButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    els.tabButtons.forEach((tab) => tab.classList.toggle("is-active", tab === button));
+    els.viewPanels.forEach((panel) => {
+      panel.classList.toggle("is-active", panel.dataset.panel === button.dataset.view);
+    });
+  });
 });
 
 renderAll();
