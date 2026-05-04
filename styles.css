@@ -260,8 +260,7 @@ h2 {
   width: 54px;
 }
 
-.dashboard-table td:nth-child(4),
-.management-table td:nth-child(9) {
+.primary-cell {
   color: var(--ink);
   font-weight: 760;
 }

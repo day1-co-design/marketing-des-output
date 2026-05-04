@@ -40,7 +40,7 @@
           <label for="courseTypeFilter">코스 유형</label>
           <select id="courseTypeFilter"></select>
         </div>
-        <div class="control-group">
+        <div class="control-group" id="localizationTypeControl">
           <label for="localizationTypeFilter">현지화 유형</label>
           <select id="localizationTypeFilter"></select>
         </div>
@@ -74,23 +74,8 @@
           <span class="count-pill" id="managementCount">0개</span>
         </div>
         <div class="table-wrap">
-          <table class="management-table">
-            <thead>
-              <tr>
-                <th>번호</th>
-                <th>사이트</th>
-                <th>언어</th>
-                <th>코스 유형</th>
-                <th>현지화 유형</th>
-                <th>코스 포맷</th>
-                <th>업무 구간</th>
-                <th>구분</th>
-                <th>업무내용</th>
-                <th>규격</th>
-                <th>업무유무</th>
-                <th>유형적합여부</th>
-              </tr>
-            </thead>
+          <table class="management-table" id="managementTable">
+            <thead id="managementTableHead"></thead>
             <tbody id="managementTableBody"></tbody>
           </table>
         </div>

@@ -2,7 +2,7 @@ const sourceRows = [
   ["", "국가(사이트)", "KR", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
   ["", "언어", "KR", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
   ["", "포맷/산출물", "얼리버드", "", "", "", "", "", "", "", "상세페이지 오픈", "", "", "", "", "", "", "", "", "", "", "", "영상공개", "", "", "", "", "", ""],
-  ["", "", "얼리버드 오가닉", "", "", "", "", "", "", "", "사이트", "", "", "", "", "오가닉", "", "", "", "", "", "", "사이트", "오가닉", "", "", "", "", ""],
+  ["", "", "얼리버드 오가닉", "", "", "", "", "", "사이트", "얼리버드 오가닉", "사이트", "", "", "", "", "오가닉", "", "", "", "", "", "", "사이트", "오가닉", "", "", "", "", ""],
   ["", "", "콜로소 공계 피드", "", "스토리", "연사용 공계 피드", "", "카카오톡", "코스카드 썸네일", "EDM", "상세페이지", "메인배너", "큐레이션 배너", "포맷 전용 페이지", "", "피드", "", "스토리", "연사용 공계 피드", "", "EDM", "광고", "상세페이지 수정", "콜로소 공계 피드", "", "스토리", "연사용 오가닉", "", "광고"],
   ["", "", "1:1", "4:5", "", "1:1", "4:5", "", "", "", "", "", "", "메인 페이지 ", "개별 상세 페이지", "1:1", "4:5", "", "1:1", "4:5", "", "", "", "1:1", "4:5", "", "1:1", "4:5", ""],
 ];
@@ -62,12 +62,15 @@ const els = {
   languageFilter: document.getElementById("languageFilter"),
   courseTypeFilter: document.getElementById("courseTypeFilter"),
   courseFormatFilter: document.getElementById("courseFormatFilter"),
+  localizationTypeControl: document.getElementById("localizationTypeControl"),
   localizationTypeFilter: document.getElementById("localizationTypeFilter"),
   phaseFilter: document.getElementById("phaseFilter"),
   selectedScope: document.getElementById("selectedScope"),
   taskCount: document.getElementById("taskCount"),
   taskList: document.getElementById("taskList"),
   managementCount: document.getElementById("managementCount"),
+  managementTable: document.getElementById("managementTable"),
+  managementTableHead: document.getElementById("managementTableHead"),
   managementTableBody: document.getElementById("managementTableBody"),
   csvFileInput: document.getElementById("csvFileInput"),
   importCsvBtn: document.getElementById("importCsvBtn"),
@@ -203,6 +206,7 @@ function renderLanguageOptions() {
 function renderFormatOptions() {
   const site = els.siteFilter.value;
   const language = els.languageFilter.value;
+  const useLocalizationType = isLocalizationTypeActive();
   fillSelect(
     els.phaseFilter,
     unique(
@@ -215,7 +219,8 @@ function renderFormatOptions() {
               item.courseType === els.courseTypeFilter.value) &&
             (els.courseFormatFilter.value === "전체" ||
               item.courseFormat === els.courseFormatFilter.value) &&
-            (els.localizationTypeFilter.value === "전체" ||
+            (!useLocalizationType ||
+              els.localizationTypeFilter.value === "전체" ||
               item.localizationType === els.localizationTypeFilter.value)
         )
         .map((item) => item.phase)
@@ -245,6 +250,7 @@ function renderCourseFormatOptions() {
   const language = els.languageFilter.value;
   const courseType = els.courseTypeFilter.value;
   const localizationType = els.localizationTypeFilter.value;
+  const useLocalizationType = isLocalizationTypeActive();
   fillSelect(
     els.courseFormatFilter,
     unique(
@@ -254,7 +260,9 @@ function renderCourseFormatOptions() {
             (site === "전체" || item.site === site) &&
             (language === "전체" || item.language === language) &&
             (courseType === "전체" || item.courseType === courseType) &&
-            (localizationType === "전체" || item.localizationType === localizationType)
+            (!useLocalizationType ||
+              localizationType === "전체" ||
+              item.localizationType === localizationType)
         )
         .map((item) => item.courseFormat)
     )
@@ -265,6 +273,13 @@ function renderLocalizationTypeOptions() {
   const site = els.siteFilter.value;
   const language = els.languageFilter.value;
   const courseType = els.courseTypeFilter.value;
+
+  if (!isLocalizationTypeActive()) {
+    fillSelect(els.localizationTypeFilter, ["전체"]);
+    syncLocalizationTypeVisibility();
+    return;
+  }
+
   fillSelect(
     els.localizationTypeFilter,
     unique(
@@ -278,6 +293,7 @@ function renderLocalizationTypeOptions() {
         .map((item) => item.localizationType)
     )
   );
+  syncLocalizationTypeVisibility();
 }
 
 function getSelectedItems() {
@@ -285,6 +301,7 @@ function getSelectedItems() {
 }
 
 function getFilteredItems() {
+  const useLocalizationType = isLocalizationTypeActive();
   return items.filter(
     (item) =>
       (els.siteFilter.value === "전체" || item.site === els.siteFilter.value) &&
@@ -292,7 +309,8 @@ function getFilteredItems() {
       (els.courseTypeFilter.value === "전체" || item.courseType === els.courseTypeFilter.value) &&
       (els.courseFormatFilter.value === "전체" ||
         item.courseFormat === els.courseFormatFilter.value) &&
-      (els.localizationTypeFilter.value === "전체" ||
+      (!useLocalizationType ||
+        els.localizationTypeFilter.value === "전체" ||
         item.localizationType === els.localizationTypeFilter.value) &&
       (els.phaseFilter.value === "전체" || item.phase === els.phaseFilter.value)
   );
@@ -332,7 +350,15 @@ function isNo(value) {
 
 function renderList() {
   const selectedItems = getSelectedItems();
-  els.selectedScope.textContent = `${els.siteFilter.value} · ${els.languageFilter.value} · ${els.courseTypeFilter.value} · ${els.localizationTypeFilter.value} · ${els.courseFormatFilter.value} · ${els.phaseFilter.value}`;
+  const scopeParts = [
+    els.siteFilter.value,
+    els.languageFilter.value,
+    els.courseTypeFilter.value,
+    ...(isLocalizationTypeActive() ? [els.localizationTypeFilter.value] : []),
+    els.courseFormatFilter.value,
+    els.phaseFilter.value,
+  ];
+  els.selectedScope.textContent = scopeParts.join(" · ");
   els.taskCount.textContent = `${selectedItems.length}개`;
 
   if (!selectedItems.length) {
@@ -344,6 +370,7 @@ function renderList() {
 }
 
 function renderDashboardTable(selectedItems) {
+  const showLocalizationType = isLocalizationTypeActive();
   return `
     <div class="table-wrap compact">
       <table class="dashboard-table">
@@ -353,7 +380,7 @@ function renderDashboardTable(selectedItems) {
             <th>업무 구간</th>
             <th>구분</th>
             <th>업무내용</th>
-            <th>현지화 유형</th>
+            ${showLocalizationType ? "<th>현지화 유형</th>" : ""}
             <th>코스 포맷</th>
             <th>규격</th>
           </tr>
@@ -366,8 +393,8 @@ function renderDashboardTable(selectedItems) {
                   <td>${index + 1}</td>
                   <td>${escapeHtml(item.phase)}</td>
                   <td>${escapeHtml(item.group || "-")}</td>
-                  <td>${escapeHtml(item.output)}</td>
-                  <td>${escapeHtml(item.localizationType || "-")}</td>
+                  <td class="primary-cell">${escapeHtml(item.output)}</td>
+                  ${showLocalizationType ? `<td>${escapeHtml(item.localizationType || "-")}</td>` : ""}
                   <td>${escapeHtml(item.courseFormat)}</td>
                   <td>${escapeHtml(item.size || "-")}</td>
                 </tr>
@@ -382,10 +409,13 @@ function renderDashboardTable(selectedItems) {
 
 function renderManagementTable() {
   const managedItems = getFilteredItems();
+  const showLocalizationType = isLocalizationTypeActive();
   els.managementCount.textContent = `${managedItems.length}개`;
+  renderManagementHeader(showLocalizationType);
 
   if (!managedItems.length) {
-    els.managementTableBody.innerHTML = `<tr><td colspan="12" class="empty-state">편집할 업무 항목이 없습니다</td></tr>`;
+    const columnCount = showLocalizationType ? 12 : 11;
+    els.managementTableBody.innerHTML = `<tr><td colspan="${columnCount}" class="empty-state">편집할 업무 항목이 없습니다</td></tr>`;
     return;
   }
 
@@ -397,11 +427,11 @@ function renderManagementTable() {
           <td>${escapeHtml(item.site)}</td>
           <td>${escapeHtml(item.language)}</td>
           <td>${escapeHtml(item.courseType)}</td>
-          <td>${escapeHtml(item.localizationType || "-")}</td>
+          ${showLocalizationType ? `<td>${escapeHtml(item.localizationType || "-")}</td>` : ""}
           <td>${escapeHtml(item.courseFormat)}</td>
           <td>${escapeHtml(item.phase)}</td>
           <td>${escapeHtml(item.group || "-")}</td>
-          <td>${escapeHtml(item.output)}</td>
+          <td class="primary-cell">${escapeHtml(item.output)}</td>
           <td>
             <input
               class="table-input"
@@ -416,6 +446,25 @@ function renderManagementTable() {
       `
     )
     .join("");
+}
+
+function renderManagementHeader(showLocalizationType) {
+  els.managementTableHead.innerHTML = `
+    <tr>
+      <th>번호</th>
+      <th>사이트</th>
+      <th>언어</th>
+      <th>코스 유형</th>
+      ${showLocalizationType ? "<th>현지화 유형</th>" : ""}
+      <th>코스 포맷</th>
+      <th>업무 구간</th>
+      <th>구분</th>
+      <th>업무내용</th>
+      <th>규격</th>
+      <th>업무유무</th>
+      <th>유형적합여부</th>
+    </tr>
+  `;
 }
 
 function renderEditableSelect(item, field) {
@@ -561,6 +610,14 @@ function setSaveState(state) {
   hasUnsavedChanges = false;
   els.saveBtn.disabled = true;
   els.saveBtn.textContent = "저장";
+}
+
+function isLocalizationTypeActive() {
+  return els.courseTypeFilter.value === "현지화";
+}
+
+function syncLocalizationTypeVisibility() {
+  els.localizationTypeControl.hidden = !isLocalizationTypeActive();
 }
 
 function groupBy(source, keyGetter) {
