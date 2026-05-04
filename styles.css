@@ -102,7 +102,7 @@ h2 {
 .filter-band {
   display: grid;
   gap: 14px;
-  grid-template-columns: 140px 140px minmax(170px, 0.8fr) minmax(190px, 1fr) minmax(220px, 1fr);
+  grid-template-columns: 120px 120px minmax(150px, 0.8fr) minmax(170px, 1fr) minmax(170px, 1fr) minmax(190px, 1fr);
   padding: 14px;
 }
 
@@ -213,6 +213,47 @@ h2 {
 
 .task-list {
   padding: 18px 28px 24px;
+}
+
+.table-wrap {
+  overflow: auto;
+  padding: 18px;
+}
+
+.table-wrap.compact {
+  padding: 0;
+}
+
+.dashboard-table,
+.management-table {
+  border-collapse: collapse;
+  min-width: 980px;
+  width: 100%;
+}
+
+.dashboard-table th,
+.dashboard-table td,
+.management-table th,
+.management-table td {
+  border: 1px solid var(--line);
+  font-size: 13px;
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.dashboard-table th,
+.management-table th {
+  background: #f8fafb;
+  color: var(--muted);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.dashboard-table td:nth-child(3),
+.management-table td:nth-child(8) {
+  color: var(--ink);
+  font-weight: 760;
 }
 
 .parallel-board {
@@ -336,37 +377,8 @@ h2 {
   text-align: center;
 }
 
-.table-wrap {
-  overflow: auto;
-  padding: 18px;
-}
-
 .management-table {
-  border-collapse: collapse;
   min-width: 1280px;
-  width: 100%;
-}
-
-.management-table th,
-.management-table td {
-  border: 1px solid var(--line);
-  font-size: 13px;
-  padding: 9px 10px;
-  text-align: left;
-  vertical-align: middle;
-}
-
-.management-table th {
-  background: #f8fafb;
-  color: var(--muted);
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.management-table td:nth-child(7) {
-  color: var(--ink);
-  font-weight: 760;
-  min-width: 170px;
 }
 
 .is-hidden-row {

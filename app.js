@@ -15,19 +15,20 @@ const siteLanguageOptions = [
   { site: "GL", language: "TH" },
 ];
 
-const courseFormatRows = [
-  { category: "오리지널", type: "코스" },
-  { category: "오리지널", type: "시그니처" },
-  { category: "오리지널", type: "딕셔너리" },
-  { category: "오리지널", type: "프로젝트" },
-  { category: "오리지널", type: "클래스" },
-  { category: "오리지널", type: "클래스 +" },
-  { category: "오리지널", type: "신규" },
-  { category: "현지화", type: "폐강옵션" },
-  { category: "현지화", type: "정규" },
-  { category: "현지화", type: "더빙" },
-  { category: "현지화", type: "확장" },
+const courseTypes = ["오리지널", "현지화"];
+
+const courseFormatOptions = [
+  "코스",
+  "시그니처",
+  "딕셔너리",
+  "프로젝트",
+  "클래스",
+  "클래스 +",
+  "신규",
+  "에셋 유형",
 ];
+
+const localizationTypeOptions = ["폐강옵션", "정규", "더빙", "확장"];
 
 const csvColumns = [
   { key: "id", label: "ID" },
@@ -35,6 +36,7 @@ const csvColumns = [
   { key: "language", label: "언어" },
   { key: "courseType", label: "코스유형" },
   { key: "courseFormat", label: "코스포맷" },
+  { key: "localizationType", label: "현지화유형" },
   { key: "phase", label: "업무구간" },
   { key: "group", label: "구분" },
   { key: "output", label: "업무내용" },
@@ -60,6 +62,7 @@ const els = {
   languageFilter: document.getElementById("languageFilter"),
   courseTypeFilter: document.getElementById("courseTypeFilter"),
   courseFormatFilter: document.getElementById("courseFormatFilter"),
+  localizationTypeFilter: document.getElementById("localizationTypeFilter"),
   phaseFilter: document.getElementById("phaseFilter"),
   selectedScope: document.getElementById("selectedScope"),
   taskCount: document.getElementById("taskCount"),
@@ -101,17 +104,25 @@ function buildItems(rows) {
   }
 
   return siteLanguageOptions.flatMap((option) =>
-    courseFormatRows.flatMap((courseFormat) =>
-      baseItems.map((item) => ({
-        ...withDefaults({
-          site: option.site,
-          language: option.language,
-          courseType: courseFormat.category,
-          courseFormat: courseFormat.type,
-          ...item,
-        }),
-      }))
-    )
+    courseTypes.flatMap((courseType) => {
+      const localizationTypes =
+        courseType === "현지화" ? localizationTypeOptions : ["-"];
+
+      return courseFormatOptions.flatMap((courseFormat) =>
+        localizationTypes.flatMap((localizationType) =>
+          baseItems.map((item) => ({
+            ...withDefaults({
+              site: option.site,
+              language: option.language,
+              courseType,
+              courseFormat,
+              localizationType,
+              ...item,
+            }),
+          }))
+        )
+      );
+    })
   );
 }
 
@@ -130,6 +141,7 @@ function makeId(item) {
     item.language,
     item.courseType,
     item.courseFormat,
+    item.localizationType,
     item.sourceColumn,
   ]
     .join("_")
@@ -202,7 +214,9 @@ function renderFormatOptions() {
             (els.courseTypeFilter.value === "전체" ||
               item.courseType === els.courseTypeFilter.value) &&
             (els.courseFormatFilter.value === "전체" ||
-              item.courseFormat === els.courseFormatFilter.value)
+              item.courseFormat === els.courseFormatFilter.value) &&
+            (els.localizationTypeFilter.value === "전체" ||
+              item.localizationType === els.localizationTypeFilter.value)
         )
         .map((item) => item.phase)
     )
@@ -245,6 +259,27 @@ function renderCourseFormatOptions() {
   );
 }
 
+function renderLocalizationTypeOptions() {
+  const site = els.siteFilter.value;
+  const language = els.languageFilter.value;
+  const courseType = els.courseTypeFilter.value;
+  const courseFormat = els.courseFormatFilter.value;
+  fillSelect(
+    els.localizationTypeFilter,
+    unique(
+      items
+        .filter(
+          (item) =>
+            (site === "전체" || item.site === site) &&
+            (language === "전체" || item.language === language) &&
+            (courseType === "전체" || item.courseType === courseType) &&
+            (courseFormat === "전체" || item.courseFormat === courseFormat)
+        )
+        .map((item) => item.localizationType)
+    )
+  );
+}
+
 function getSelectedItems() {
   return dedupeItems(getFilteredItems().filter(isVisible));
 }
@@ -257,6 +292,8 @@ function getFilteredItems() {
       (els.courseTypeFilter.value === "전체" || item.courseType === els.courseTypeFilter.value) &&
       (els.courseFormatFilter.value === "전체" ||
         item.courseFormat === els.courseFormatFilter.value) &&
+      (els.localizationTypeFilter.value === "전체" ||
+        item.localizationType === els.localizationTypeFilter.value) &&
       (els.phaseFilter.value === "전체" || item.phase === els.phaseFilter.value)
   );
 }
@@ -269,6 +306,7 @@ function dedupeItems(source) {
       item.language,
       item.courseType,
       item.courseFormat,
+      item.localizationType,
       item.phase,
       item.group,
       item.output,
@@ -294,7 +332,7 @@ function isNo(value) {
 
 function renderList() {
   const selectedItems = getSelectedItems();
-  els.selectedScope.textContent = `${els.siteFilter.value} · ${els.languageFilter.value} · ${els.courseTypeFilter.value} · ${els.courseFormatFilter.value} · ${els.phaseFilter.value}`;
+  els.selectedScope.textContent = `${els.siteFilter.value} · ${els.languageFilter.value} · ${els.courseTypeFilter.value} · ${els.courseFormatFilter.value} · ${els.localizationTypeFilter.value} · ${els.phaseFilter.value}`;
   els.taskCount.textContent = `${selectedItems.length}개`;
 
   if (!selectedItems.length) {
@@ -302,86 +340,41 @@ function renderList() {
     return;
   }
 
-  els.taskList.innerHTML = `
-    <div class="parallel-board">
-      ${[...groupBy(selectedItems, (item) => item.phase || "기타").entries()]
-        .map(([phase, phaseItems]) => renderPhaseColumn(phase, phaseItems))
-        .join("")}
+  els.taskList.innerHTML = renderDashboardTable(selectedItems);
+}
+
+function renderDashboardTable(selectedItems) {
+  return `
+    <div class="table-wrap compact">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>업무 구간</th>
+            <th>구분</th>
+            <th>업무내용</th>
+            <th>코스 포맷</th>
+            <th>현지화 유형</th>
+            <th>규격</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${selectedItems
+            .map(
+              (item) => `
+                <tr>
+                  <td>${escapeHtml(item.phase)}</td>
+                  <td>${escapeHtml(item.group || "-")}</td>
+                  <td>${escapeHtml(item.output)}</td>
+                  <td>${escapeHtml(item.courseFormat)}</td>
+                  <td>${escapeHtml(item.localizationType || "-")}</td>
+                  <td>${escapeHtml(item.size || "-")}</td>
+                </tr>
+              `
+            )
+            .join("")}
+        </tbody>
+      </table>
     </div>
-  `;
-}
-
-function renderPhaseColumn(phase, phaseItems) {
-  return `
-    <section class="phase-column">
-      <div class="phase-heading">
-        <strong>${escapeHtml(phase)}</strong>
-        <span>${phaseItems.length}개</span>
-      </div>
-      <div class="group-grid">
-        ${renderGroupColumns(phaseItems)}
-      </div>
-    </section>
-  `;
-}
-
-function renderGroupColumns(phaseItems) {
-  return [...groupBy(phaseItems, (item) => item.group || "기타").entries()]
-    .map(([group, groupItems]) => {
-      const outputGroups = groupBy(groupItems, (item) => item.output || "산출물");
-      return `
-        <section class="group-column">
-          <div class="group-heading">
-            <strong>${escapeHtml(group)}</strong>
-            <span>${groupItems.length}개</span>
-          </div>
-          <div class="output-grid">
-            ${[...outputGroups.entries()]
-              .map(([output, outputItems]) => renderOutputColumn(output, outputItems))
-              .join("")}
-          </div>
-        </section>
-      `;
-    })
-    .join("");
-}
-
-function renderOutputColumn(output, outputItems) {
-  const sizes = unique(outputItems.map((item) => item.size || "-"));
-  const courseTypeMeta = els.courseTypeFilter.value === "전체"
-    ? unique(outputItems.map((item) => item.courseType))
-    : [];
-  const courseFormatMeta = els.courseFormatFilter.value === "전체"
-    ? unique(outputItems.map((item) => item.courseFormat))
-    : [];
-
-  return `
-    <article class="output-column">
-      <h3>${escapeHtml(output)}</h3>
-      ${
-        courseTypeMeta.length
-          ? `<div class="meta-group">
-              <span class="meta-label">코스 유형</span>
-              <div class="meta-stack">${courseTypeMeta
-                .map((value) => `<span>${escapeHtml(value)}</span>`)
-                .join("")}</div>
-            </div>`
-          : ""
-      }
-      ${
-        courseFormatMeta.length
-          ? `<div class="meta-group">
-              <span class="meta-label">코스 포맷</span>
-              <div class="meta-stack">${courseFormatMeta
-              .map((value) => `<span>${escapeHtml(value)}</span>`)
-              .join("")}</div>
-            </div>`
-          : ""
-      }
-      <div class="size-stack">
-        ${sizes.map((size) => `<span>${escapeHtml(size)}</span>`).join("")}
-      </div>
-    </article>
   `;
 }
 
@@ -390,7 +383,7 @@ function renderManagementTable() {
   els.managementCount.textContent = `${managedItems.length}개`;
 
   if (!managedItems.length) {
-    els.managementTableBody.innerHTML = `<tr><td colspan="10" class="empty-state">편집할 업무 항목이 없습니다</td></tr>`;
+    els.managementTableBody.innerHTML = `<tr><td colspan="11" class="empty-state">편집할 업무 항목이 없습니다</td></tr>`;
     return;
   }
 
@@ -402,6 +395,7 @@ function renderManagementTable() {
           <td>${escapeHtml(item.language)}</td>
           <td>${escapeHtml(item.courseType)}</td>
           <td>${escapeHtml(item.courseFormat)}</td>
+          <td>${escapeHtml(item.localizationType || "-")}</td>
           <td>${escapeHtml(item.phase)}</td>
           <td>${escapeHtml(item.group || "-")}</td>
           <td>${escapeHtml(item.output)}</td>
@@ -581,6 +575,7 @@ function renderAll() {
   renderLanguageOptions();
   renderCourseTypeOptions();
   renderCourseFormatOptions();
+  renderLocalizationTypeOptions();
   renderFormatOptions();
   renderList();
   renderManagementTable();
@@ -599,6 +594,7 @@ els.siteFilter.addEventListener("change", () => {
   renderLanguageOptions();
   renderCourseTypeOptions();
   renderCourseFormatOptions();
+  renderLocalizationTypeOptions();
   renderFormatOptions();
   renderList();
   renderManagementTable();
@@ -606,17 +602,25 @@ els.siteFilter.addEventListener("change", () => {
 els.languageFilter.addEventListener("change", () => {
   renderCourseTypeOptions();
   renderCourseFormatOptions();
+  renderLocalizationTypeOptions();
   renderFormatOptions();
   renderList();
   renderManagementTable();
 });
 els.courseTypeFilter.addEventListener("change", () => {
   renderCourseFormatOptions();
+  renderLocalizationTypeOptions();
   renderFormatOptions();
   renderList();
   renderManagementTable();
 });
 els.courseFormatFilter.addEventListener("change", () => {
+  renderLocalizationTypeOptions();
+  renderFormatOptions();
+  renderList();
+  renderManagementTable();
+});
+els.localizationTypeFilter.addEventListener("change", () => {
   renderFormatOptions();
   renderList();
   renderManagementTable();
