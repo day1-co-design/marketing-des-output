@@ -29,6 +29,31 @@ const courseFormatRows = [
   { category: "현지화", type: "확장" },
 ];
 
+const csvColumns = [
+  { key: "id", label: "ID" },
+  { key: "site", label: "사이트" },
+  { key: "language", label: "언어" },
+  { key: "courseType", label: "코스유형" },
+  { key: "courseFormat", label: "코스포맷" },
+  { key: "phase", label: "업무구간" },
+  { key: "group", label: "구분" },
+  { key: "output", label: "업무내용" },
+  { key: "size", label: "규격" },
+  { key: "workIncluded", label: "업무유무" },
+  { key: "typeFit", label: "유형적합여부" },
+];
+
+const headerMap = new Map(
+  csvColumns.flatMap((column) => [
+    [column.key, column.key],
+    [column.label, column.key],
+  ])
+);
+
+const overrideStorageKey = "colosoDesignOutputChecks";
+let overrides = loadOverrides();
+let items = applyOverrides(buildItems(sourceRows));
+
 const els = {
   siteFilter: document.getElementById("siteFilter"),
   languageFilter: document.getElementById("languageFilter"),
@@ -38,9 +63,10 @@ const els = {
   selectedScope: document.getElementById("selectedScope"),
   taskCount: document.getElementById("taskCount"),
   taskList: document.getElementById("taskList"),
+  csvFileInput: document.getElementById("csvFileInput"),
+  importCsvBtn: document.getElementById("importCsvBtn"),
+  exportCsvBtn: document.getElementById("exportCsvBtn"),
 };
-
-const items = buildItems(sourceRows);
 
 function buildItems(rows) {
   const baseItems = [];
@@ -60,6 +86,7 @@ function buildItems(rows) {
     if (!carry.phase || !carry.output) continue;
 
     baseItems.push({
+      sourceColumn: column,
       phase: carry.phase,
       group: carry.group,
       output: carry.output.trim(),
@@ -70,14 +97,56 @@ function buildItems(rows) {
   return siteLanguageOptions.flatMap((option) =>
     courseFormatRows.flatMap((courseFormat) =>
       baseItems.map((item) => ({
-        site: option.site,
-        language: option.language,
-        courseType: courseFormat.category,
-        courseFormat: courseFormat.type,
-        ...item,
+        ...withDefaults({
+          site: option.site,
+          language: option.language,
+          courseType: courseFormat.category,
+          courseFormat: courseFormat.type,
+          ...item,
+        }),
       }))
     )
   );
+}
+
+function withDefaults(item) {
+  return {
+    ...item,
+    id: makeId(item),
+    workIncluded: "O",
+    typeFit: "O",
+  };
+}
+
+function makeId(item) {
+  return [
+    item.site,
+    item.language,
+    item.courseType,
+    item.courseFormat,
+    item.sourceColumn,
+  ]
+    .join("_")
+    .replace(/\s+/g, "");
+}
+
+function loadOverrides() {
+  const saved = localStorage.getItem(overrideStorageKey);
+  if (!saved) return {};
+
+  try {
+    const parsed = JSON.parse(saved);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function applyOverrides(baseItems) {
+  return baseItems.map((item) => ({
+    ...item,
+    ...(overrides[item.id] || {}),
+  }));
 }
 
 function unique(values) {
@@ -173,6 +242,7 @@ function renderCourseFormatOptions() {
 function getSelectedItems() {
   const selected = items.filter(
     (item) =>
+      isVisible(item) &&
       (els.siteFilter.value === "전체" || item.site === els.siteFilter.value) &&
       (els.languageFilter.value === "전체" || item.language === els.languageFilter.value) &&
       (els.courseTypeFilter.value === "전체" || item.courseType === els.courseTypeFilter.value) &&
@@ -188,17 +258,31 @@ function dedupeItems(source) {
   const seen = new Set();
   return source.filter((item) => {
     const key = [
+      item.site,
+      item.language,
       item.courseType,
       item.courseFormat,
       item.phase,
       item.group,
       item.output,
       item.size,
+      item.workIncluded,
+      item.typeFit,
     ].join("|");
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
+}
+
+function isVisible(item) {
+  return !isNo(item.workIncluded) && !isNo(item.typeFit);
+}
+
+function isNo(value) {
+  return ["N", "NO", "X", "FALSE", "0", "불필요", "미노출"].includes(
+    String(value || "").trim().toUpperCase()
+  );
 }
 
 function renderList() {
@@ -294,6 +378,95 @@ function renderOutputColumn(output, outputItems) {
   `;
 }
 
+function exportCsv() {
+  const csv = [
+    csvColumns.map((column) => column.label).join(","),
+    ...items.map((item) =>
+      csvColumns.map((column) => csvEscape(item[column.key] || "")).join(",")
+    ),
+  ].join("\n");
+  const blob = new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "coloso-design-output-checks.csv";
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function importCsv(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    const rows = parseCsv(String(reader.result || ""));
+    const headers = rows.shift() || [];
+    const normalizedHeaders = headers.map((header) => headerMap.get(header.trim()) || "");
+    const nextOverrides = {};
+
+    rows.forEach((row) => {
+      const record = {};
+      normalizedHeaders.forEach((key, index) => {
+        if (key) record[key] = row[index] || "";
+      });
+
+      if (!record.id) return;
+
+      nextOverrides[record.id] = {
+        size: record.size || "",
+        workIncluded: record.workIncluded || "",
+        typeFit: record.typeFit || "",
+      };
+    });
+
+    overrides = nextOverrides;
+    localStorage.setItem(overrideStorageKey, JSON.stringify(overrides));
+    items = applyOverrides(buildItems(sourceRows));
+    renderAll();
+  };
+  reader.readAsText(file);
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let cell = "";
+  let row = [];
+  let quoted = false;
+
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+    const next = text[i + 1];
+
+    if (char === '"' && quoted && next === '"') {
+      cell += '"';
+      i += 1;
+    } else if (char === '"') {
+      quoted = !quoted;
+    } else if (char === "," && !quoted) {
+      row.push(cell);
+      cell = "";
+    } else if ((char === "\n" || char === "\r") && !quoted) {
+      if (char === "\r" && next === "\n") i += 1;
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = "";
+    } else {
+      cell += char;
+    }
+  }
+
+  if (cell || row.length) {
+    row.push(cell);
+    rows.push(row);
+  }
+
+  return rows.filter((csvRow) => csvRow.some((value) => value.trim()));
+}
+
+function csvEscape(value) {
+  const text = String(value);
+  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+
 function groupBy(source, keyGetter) {
   const groups = new Map();
   source.forEach((item) => {
@@ -345,5 +518,12 @@ els.courseFormatFilter.addEventListener("change", () => {
   renderList();
 });
 els.phaseFilter.addEventListener("change", renderList);
+els.exportCsvBtn.addEventListener("click", exportCsv);
+els.importCsvBtn.addEventListener("click", () => els.csvFileInput.click());
+els.csvFileInput.addEventListener("change", (event) => {
+  const [file] = event.target.files || [];
+  if (file) importCsv(file);
+  event.target.value = "";
+});
 
 renderAll();
