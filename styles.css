@@ -177,6 +177,10 @@ h2 {
   gap: 6px;
 }
 
+.control-group.is-hidden {
+  display: none;
+}
+
 .control-group label {
   color: var(--muted);
   font-size: 12px;

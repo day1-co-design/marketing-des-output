@@ -616,7 +616,15 @@ function isLocalizationTypeActive() {
 }
 
 function syncLocalizationTypeVisibility() {
-  els.localizationTypeControl.hidden = !isLocalizationTypeActive();
+  const show = isLocalizationTypeActive();
+  if (!show) {
+    els.localizationTypeFilter.value = "전체";
+    els.localizationTypeFilter.blur();
+  }
+  els.localizationTypeControl.hidden = !show;
+  els.localizationTypeControl.classList.toggle("is-hidden", !show);
+  els.localizationTypeControl.setAttribute("aria-hidden", String(!show));
+  els.localizationTypeFilter.disabled = !show;
 }
 
 function groupBy(source, keyGetter) {
