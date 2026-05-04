@@ -13,8 +13,6 @@ log() {
   printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S %z')" "$*"
 }
 
-trap 'code=$?; log "Watcher exiting with code $code."; exit $code' EXIT
-
 cd "$repo_dir" || {
   log "Cannot open repo directory: $repo_dir"
   exit 1

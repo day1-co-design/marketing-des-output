@@ -9,9 +9,6 @@ if [ -f "$pid_file" ]; then
   pid="$(cat "$pid_file")"
   if [ -n "$pid" ] && kill -0 "$pid" >/dev/null 2>&1; then
     echo "Auto-push is running. PID: $pid"
-    echo
-    echo "Recent watcher process:"
-    pgrep -fl "auto-push-marketing-output.sh" 2>/dev/null || echo "Watcher process is between restarts."
   else
     echo "Auto-push is not running. Removing stale PID file."
     rm -f "$pid_file"
@@ -27,3 +24,4 @@ tail -n 20 "$out_log" 2>/dev/null || echo "No output log yet."
 echo
 echo "Recent error log:"
 tail -n 20 "$err_log" 2>/dev/null || echo "No error log yet."
+
