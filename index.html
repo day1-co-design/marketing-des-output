@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>콜로소 마케팅 디자인 산출물 관리 대시보드</title>
-    <link rel="stylesheet" href="./styles.css?v=20260506-auth" />
+    <link rel="stylesheet" href="./styles.css?v=20260506-edit-ext" />
   </head>
   <body>
     <main class="app-shell">
@@ -14,26 +14,28 @@
         </div>
         <div class="top-actions">
           <span class="sync-status is-local" id="syncStatus">로컬 저장</span>
+          <button class="tab-button is-active" type="button" data-view="dashboard">대시보드</button>
           <input id="csvFileInput" type="file" accept=".csv" hidden />
           <button class="ghost-button" id="importCsvBtn" type="button">CSV 업로드</button>
           <button class="primary-button" id="exportCsvBtn" type="button">CSV 내보내기</button>
-        </div>
-      </header>
-
-      <nav class="view-tabs" aria-label="화면 전환">
-        <div class="tab-group">
-          <button class="tab-button is-active" type="button" data-view="dashboard">대시보드</button>
           <button class="tab-button" type="button" data-view="maintenance">운영 기준 편집</button>
           <button class="save-button" id="saveBtn" type="button" disabled>저장</button>
         </div>
-      </nav>
+      </header>
+
+      <section class="guide-bar" aria-label="가이드 문서">
+        <div>
+          <h2>가이드 문서</h2>
+        </div>
+        <div class="guide-link-list" id="guideLinkList"></div>
+      </section>
 
       <section class="filter-band" aria-label="업무 조건">
         <div class="control-group">
           <label for="siteFilter">사이트</label>
           <select id="siteFilter"></select>
         </div>
-        <div class="control-group">
+        <div class="control-group is-hidden" id="languageControl">
           <label for="languageFilter">언어</label>
           <select id="languageFilter"></select>
         </div>
@@ -41,7 +43,7 @@
           <label for="courseTypeFilter">코스 유형</label>
           <select id="courseTypeFilter"></select>
         </div>
-        <div class="control-group is-hidden" id="localizationTypeControl" hidden>
+        <div class="control-group is-hidden" id="localizationTypeControl">
           <label for="localizationTypeFilter">현지화 유형</label>
           <select id="localizationTypeFilter"></select>
         </div>
@@ -50,7 +52,7 @@
           <select id="courseFormatFilter"></select>
         </div>
         <div class="control-group">
-          <label for="phaseFilter">업무 구간</label>
+          <label for="phaseFilter">런칭 타임라인</label>
           <select id="phaseFilter"></select>
         </div>
       </section>
@@ -59,7 +61,7 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow" id="selectedScope"></p>
-            <h2>작업 산출물</h2>
+            <h2>업무 항목</h2>
           </div>
           <span class="count-pill" id="taskCount">0개</span>
         </div>
@@ -103,8 +105,8 @@
       </div>
     </main>
 
-    <script src="./config.js?v=20260506-auth"></script>
+    <script src="./config.js?v=20260506-edit-ext"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./app.js?v=20260506-auth"></script>
+    <script src="./app.js?v=20260506-edit-ext"></script>
   </body>
 </html>

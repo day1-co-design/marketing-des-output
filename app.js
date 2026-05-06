@@ -21,14 +21,21 @@ const courseFormatOptions = [
   "코스",
   "시그니처",
   "딕셔너리",
-  "프로젝트",
+  "에셋",
   "클래스",
   "클래스 +",
+  "프로젝트",
   "신규",
-  "에셋 유형",
 ];
 
 const localizationTypeOptions = ["폐강옵션", "정규", "더빙", "확장"];
+
+const guideLinks = [
+  { label: "통합", url: "" },
+  { label: "KR", url: "" },
+  { label: "JP", url: "" },
+  { label: "GL", url: "" },
+];
 
 const csvColumns = [
   { key: "id", label: "ID" },
@@ -37,10 +44,11 @@ const csvColumns = [
   { key: "courseType", label: "코스유형" },
   { key: "courseFormat", label: "코스포맷" },
   { key: "localizationType", label: "현지화유형" },
-  { key: "phase", label: "업무구간" },
+  { key: "phase", label: "런칭 타임라인" },
   { key: "group", label: "구분" },
   { key: "output", label: "업무내용" },
   { key: "size", label: "규격" },
+  { key: "fileExtension", label: "파일 확장자" },
   { key: "workIncluded", label: "업무유무" },
   { key: "typeFit", label: "유형적합여부" },
   { key: "memo", label: "메모" },
@@ -52,6 +60,10 @@ const headerMap = new Map(
     [column.label, column.key],
   ])
 );
+headerMap.set("업무구간", "phase");
+headerMap.set("업무 구간", "phase");
+headerMap.set("런칭타임라인", "phase");
+headerMap.set("파일확장자", "fileExtension");
 
 const overrideStorageKey = "colosoDesignOutputChecks";
 const dbTableName = "marketing_output_overrides";
@@ -66,6 +78,7 @@ let pendingAuthorizedAction = null;
 
 const els = {
   siteFilter: document.getElementById("siteFilter"),
+  languageControl: document.getElementById("languageControl"),
   languageFilter: document.getElementById("languageFilter"),
   courseTypeFilter: document.getElementById("courseTypeFilter"),
   courseFormatFilter: document.getElementById("courseFormatFilter"),
@@ -78,6 +91,7 @@ const els = {
   managementCount: document.getElementById("managementCount"),
   managementTableHead: document.getElementById("managementTableHead"),
   managementTableBody: document.getElementById("managementTableBody"),
+  guideLinkList: document.getElementById("guideLinkList"),
   syncStatus: document.getElementById("syncStatus"),
   csvFileInput: document.getElementById("csvFileInput"),
   importCsvBtn: document.getElementById("importCsvBtn"),
@@ -118,6 +132,8 @@ function buildItems(rows) {
     });
   }
 
+  const normalizedBaseItems = normalizeBaseItems(baseItems);
+
   return siteLanguageOptions.flatMap((option) =>
     courseTypes.flatMap((courseType) => {
       const localizationTypes =
@@ -125,7 +141,7 @@ function buildItems(rows) {
 
       return courseFormatOptions.flatMap((courseFormat) =>
         localizationTypes.flatMap((localizationType) =>
-          baseItems.map((item) => ({
+          normalizedBaseItems.map((item) => ({
             ...withDefaults({
               site: option.site,
               language: option.language,
@@ -141,14 +157,104 @@ function buildItems(rows) {
   );
 }
 
+function normalizeBaseItems(baseItems) {
+  const normalizedItems = baseItems.flatMap((item) => {
+    const normalizedItem = {
+      ...item,
+      group: normalizeGroup(item.group, item.output),
+      output: normalizeOutput(item.output),
+    };
+    normalizedItem.size = normalizeSize(normalizedItem);
+
+    if (normalizedItem.group === "오가닉" && normalizedItem.output === "카카오톡") {
+      return [
+        {
+          ...normalizedItem,
+          sourceColumn: `${normalizedItem.sourceColumn}_crm`,
+          group: "CRM",
+        },
+      ];
+    }
+
+    if (normalizedItem.group === "온사이트" && normalizedItem.output === "상세페이지") {
+      return [
+        {
+          ...normalizedItem,
+          sourceColumn: `${normalizedItem.sourceColumn}_image`,
+          output: "상세페이지 이미지 제작",
+        },
+        {
+          ...normalizedItem,
+          sourceColumn: `${normalizedItem.sourceColumn}_admin`,
+          output: "상세페이지 어드민 작업",
+        },
+      ];
+    }
+
+    return [normalizedItem];
+  });
+
+  return [
+    ...normalizedItems,
+    {
+      sourceColumn: "trailer_thumbnail",
+      phase: "상세페이지 오픈",
+      group: "오가닉",
+      output: "트레일러 썸네일",
+      size: "",
+    },
+  ];
+}
+
+function normalizeGroup(group, output) {
+  const trimmedGroup = String(group || "").trim();
+  const trimmedOutput = normalizeOutput(output);
+
+  if (trimmedOutput === "EDM") return "CRM";
+  if (trimmedOutput === "광고") return "페이드";
+  if (trimmedGroup === "사이트") return "온사이트";
+  if (trimmedGroup === "얼리버드 오가닉" || trimmedGroup === "오가닉") return "오가닉";
+  if (trimmedGroup === "광고") return "페이드";
+  return trimmedGroup;
+}
+
+function normalizeOutput(output) {
+  const trimmedOutput = String(output || "").trim();
+
+  if (trimmedOutput === "콜로소 공계 피드" || trimmedOutput === "피드") return "공계용 피드";
+  if (trimmedOutput === "스토리") return "공계용 스토리";
+  if (trimmedOutput === "연사용 공계 피드" || trimmedOutput === "연사용 오가닉") {
+    return "연사용 피드";
+  }
+  return trimmedOutput;
+}
+
+function normalizeSize(item) {
+  if (item.group === "페이드" && item.output === "광고") return "광고 소재에 따라 상이";
+  return item.size;
+}
+
 function withDefaults(item) {
   return {
     ...item,
     id: makeId(item),
+    fileExtension: getFileExtension(item),
     memo: "",
     workIncluded: "O",
     typeFit: "O",
   };
+}
+
+function getFileExtension(item) {
+  const group = String(item.group || "").trim();
+  const output = String(item.output || "").trim().toUpperCase();
+
+  if (output === "EDM") return "jpg";
+  if (output === "광고" || group === "페이드" || group === "광고") return "png 또는 mp4";
+  if (group === "오가닉" || group === "얼리버드 오가닉") {
+    return output === "트레일러 썸네일" ? "jpg" : "png";
+  }
+  return "-";
 }
 
 function makeId(item) {
@@ -179,17 +285,28 @@ function loadOverrides() {
 function applyOverrides(baseItems) {
   return baseItems.map((item) => ({
     ...item,
-    ...(overrides[item.id] || {}),
+    ...(getItemOverride(item) || {}),
   }));
+}
+
+function getItemOverride(item) {
+  if (overrides[item.id]) return overrides[item.id];
+  if (item.courseFormat !== "에셋") return null;
+
+  const legacyId = makeId({
+    ...item,
+    courseFormat: "에셋 유형",
+  });
+  return overrides[legacyId] || null;
 }
 
 function unique(values) {
   return [...new Set(values.filter(Boolean))];
 }
 
-function fillSelect(select, values) {
+function fillSelect(select, values, includeAll = values.length > 1) {
   const current = select.value;
-  const options = values.length > 1 ? ["전체", ...values] : values;
+  const options = includeAll ? ["전체", ...values] : values;
 
   select.innerHTML = options
     .map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`)
@@ -201,7 +318,19 @@ function fillSelect(select, values) {
 }
 
 function renderSiteOptions() {
-  fillSelect(els.siteFilter, unique(siteLanguageOptions.map((item) => item.site)));
+  fillSelect(els.siteFilter, unique(siteLanguageOptions.map((item) => item.site)), false);
+}
+
+function renderGuideLinks() {
+  els.guideLinkList.innerHTML = guideLinks
+    .map((link) => {
+      if (!link.url) {
+        return `<span class="guide-link is-disabled" aria-disabled="true">${escapeHtml(link.label)}</span>`;
+      }
+
+      return `<a class="guide-link" href="${escapeHtml(link.url)}" target="_blank" rel="noreferrer">${escapeHtml(link.label)}</a>`;
+    })
+    .join("");
 }
 
 function renderLanguageOptions() {
@@ -212,8 +341,10 @@ function renderLanguageOptions() {
       siteLanguageOptions
         .filter((item) => site === "전체" || item.site === site)
         .map((item) => item.language)
-    )
+    ),
+    false
   );
+  syncLanguageVisibility();
 }
 
 function renderFormatOptions() {
@@ -254,7 +385,8 @@ function renderCourseTypeOptions() {
             (language === "전체" || item.language === language)
         )
         .map((item) => item.courseType)
-    )
+    ),
+    false
   );
 }
 
@@ -278,7 +410,8 @@ function renderCourseFormatOptions() {
               item.localizationType === localizationType)
         )
         .map((item) => item.courseFormat)
-    )
+    ),
+    false
   );
 }
 
@@ -304,7 +437,8 @@ function renderLocalizationTypeOptions() {
             (courseType === "전체" || item.courseType === courseType)
         )
         .map((item) => item.localizationType)
-    )
+    ),
+    false
   );
   syncLocalizationTypeVisibility();
 }
@@ -342,6 +476,7 @@ function dedupeItems(source) {
       item.group,
       item.output,
       item.size,
+      item.fileExtension,
       item.workIncluded,
       item.typeFit,
     ].join("|");
@@ -365,121 +500,76 @@ function renderList() {
   const selectedItems = getSelectedItems();
   const scopeParts = [
     els.siteFilter.value,
-    els.languageFilter.value,
+    ...(isLanguageFilterActive() ? [els.languageFilter.value] : []),
     els.courseTypeFilter.value,
     ...(isLocalizationTypeActive() ? [els.localizationTypeFilter.value] : []),
     els.courseFormatFilter.value,
     els.phaseFilter.value,
   ];
   els.selectedScope.textContent = scopeParts.join(" · ");
-  els.taskCount.textContent = `${selectedItems.length}개 산출물`;
+  els.taskCount.textContent = `${selectedItems.length}개`;
 
   if (!selectedItems.length) {
-    els.taskList.innerHTML = `<div class="empty-state">등록된 작업 산출물이 없습니다</div>`;
+    els.taskList.innerHTML = `<div class="empty-state">등록된 업무 구조가 없습니다</div>`;
     return;
   }
 
-  els.taskList.innerHTML = renderOutputDashboard(selectedItems);
+  els.taskList.innerHTML = renderTimelineCards(selectedItems);
 }
 
-function renderOutputDashboard(selectedItems) {
-  const showLocalizationType = isLocalizationTypeActive();
+function renderTimelineCards(selectedItems) {
   const phaseEntries = [...groupBy(selectedItems, (item) => item.phase).entries()];
-  const groupCount = unique(selectedItems.map((item) => item.group || "-")).length;
-  const formatCount = unique(selectedItems.map((item) => item.courseFormat)).length;
-  const missingSizeCount = selectedItems.filter((item) => !item.size).length;
-  const maxPhaseCount = Math.max(...phaseEntries.map(([, phaseItems]) => phaseItems.length));
 
   return `
-    <div class="output-dashboard">
-      <div class="summary-grid" aria-label="작업 산출물 요약">
-        ${renderSummaryMetric("작업 산출물", selectedItems.length)}
-        ${renderSummaryMetric("업무 구간", phaseEntries.length)}
-        ${renderSummaryMetric("구분", groupCount)}
-        ${renderSummaryMetric("코스 포맷", formatCount)}
-        ${renderSummaryMetric("규격 미정", missingSizeCount)}
-      </div>
-      <div class="phase-overview" aria-label="업무 구간별 작업 산출물">
-        ${phaseEntries
-          .map(([phase, phaseItems]) => renderPhaseMeter(phase, phaseItems.length, maxPhaseCount))
-          .join("")}
-      </div>
-      <div class="phase-stack">
-        ${phaseEntries
-          .map(([phase, phaseItems]) =>
-            renderPhaseOutputSection(phase, phaseItems, showLocalizationType)
-          )
-          .join("")}
-      </div>
+    <div class="timeline-dashboard">
+      ${phaseEntries
+        .map(([phase, phaseItems]) => renderTimelinePhase(phase, phaseItems))
+        .join("")}
     </div>
   `;
 }
 
-function renderSummaryMetric(label, value) {
-  return `
-    <div class="summary-metric">
-      <span>${escapeHtml(label)}</span>
-      <strong>${value}</strong>
-    </div>
-  `;
-}
+function renderTimelinePhase(phase, phaseItems) {
+  const groupEntries = [...groupBy(phaseItems, (item) => item.group || "-").entries()].sort(
+    compareGroupEntries
+  );
+  const outputCount = groupEntries.reduce(
+    (total, [, groupItems]) => total + buildTimelineOutputRows(groupItems).length,
+    0
+  );
 
-function renderPhaseMeter(phase, count, maxCount) {
-  const width = maxCount ? Math.max((count / maxCount) * 100, 8) : 0;
   return `
-    <div class="phase-meter">
-      <div class="phase-meter-head">
-        <strong>${escapeHtml(phase)}</strong>
-        <span>${count}개</span>
-      </div>
-      <div class="meter-track" aria-hidden="true">
-        <span style="width: ${width}%"></span>
-      </div>
-    </div>
-  `;
-}
-
-function renderPhaseOutputSection(phase, phaseItems, showLocalizationType) {
-  const groupEntries = [...groupBy(phaseItems, (item) => item.group || "-").entries()];
-  return `
-    <section class="phase-output-section">
-      <header class="phase-output-header">
-        <div>
-          <p>업무 구간</p>
-          <h3>${escapeHtml(phase)}</h3>
-        </div>
-        <span>${phaseItems.length}개 산출물</span>
+    <section class="timeline-phase" style="${toneStyle(getPhaseTone(phase), "phase")}">
+      <header class="timeline-phase-header">
+        <h3 class="timeline-phase-title">${escapeHtml(phase)}</h3>
+        <span>${outputCount}개 산출물</span>
       </header>
-      <div class="output-group-stack">
+      <div class="timeline-group-grid">
         ${groupEntries
-          .map(([groupName, groupItems]) =>
-            renderOutputGroup(groupName, groupItems, showLocalizationType)
-          )
+          .map(([groupName, groupItems]) => renderTimelineGroup(groupName, groupItems))
           .join("")}
       </div>
     </section>
   `;
 }
 
-function renderOutputGroup(groupName, groupItems, showLocalizationType) {
-  const outputRows = buildOutputRows(groupItems, showLocalizationType);
+function renderTimelineGroup(groupName, groupItems) {
+  const outputRows = buildTimelineOutputRows(groupItems);
+
   return `
-    <section class="output-group">
-      <header class="output-group-header">
-        <div>
-          <span>구분</span>
-          <strong>${escapeHtml(groupName || "-")}</strong>
-        </div>
-        <em>${groupItems.length}개</em>
+    <section class="timeline-group" style="${toneStyle(getGroupTone(groupName), "group")}">
+      <header class="timeline-group-header">
+        <h4>${escapeHtml(groupName || "-")}</h4>
+        <span>${outputRows.length}개</span>
       </header>
-      <div class="output-row-list">
-        ${outputRows.map((row) => renderOutputRow(row, showLocalizationType)).join("")}
+      <div class="timeline-output-list">
+        ${outputRows.map(renderTimelineOutput).join("")}
       </div>
     </section>
   `;
 }
 
-function buildOutputRows(source, showLocalizationType) {
+function buildTimelineOutputRows(source) {
   const rows = new Map();
 
   source.forEach((item) => {
@@ -487,58 +577,134 @@ function buildOutputRows(source, showLocalizationType) {
       item.site,
       item.language,
       item.courseType,
-      item.output,
       item.courseFormat,
-      showLocalizationType ? item.localizationType : "",
+      item.localizationType,
+      item.output,
     ].join("|");
 
     if (!rows.has(key)) {
       rows.set(key, {
-        site: item.site,
-        language: item.language,
-        courseType: item.courseType,
         output: item.output,
-        courseFormat: item.courseFormat,
-        localizationType: item.localizationType,
-        sizes: [],
+        variants: [],
+        extensions: [],
       });
     }
 
     const row = rows.get(key);
-    const size = item.size || "-";
-    if (!row.sizes.includes(size)) row.sizes.push(size);
+    getSizeTags(item.size).forEach((size) => {
+      if (!row.variants.includes(size)) row.variants.push(size);
+    });
+
+    getExtensionTags(item.fileExtension).forEach((extension) => {
+      if (!row.extensions.includes(extension)) row.extensions.push(extension);
+    });
   });
 
   return [...rows.values()];
 }
 
-function renderOutputRow(row, showLocalizationType) {
+function getExtensionTags(fileExtension) {
+  const value = String(fileExtension || "").trim();
+  if (!value || value === "-") return [];
+
+  return value
+    .split(/\s*또는\s*|,\s*|\/\s*/)
+    .map((extension) => extension.trim())
+    .filter(Boolean);
+}
+
+function getSizeTags(size) {
+  const value = String(size || "").trim();
+  if (!value || value === "-") return [];
+
+  return value
+    .split(/,\s*/)
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function renderTimelineOutput(row) {
   return `
-    <article class="output-row">
-      <div class="output-main">
+    <article class="timeline-output-row">
+      <div class="timeline-output-main">
         <strong>${escapeHtml(row.output)}</strong>
-        <div class="output-meta">
-          ${els.siteFilter.value === "전체" ? `<span>${escapeHtml(row.site)}</span>` : ""}
-          ${els.languageFilter.value === "전체" ? `<span>${escapeHtml(row.language)}</span>` : ""}
-          ${els.courseTypeFilter.value === "전체" ? `<span>${escapeHtml(row.courseType)}</span>` : ""}
-          <span>${escapeHtml(row.courseFormat)}</span>
-          ${showLocalizationType ? `<span>${escapeHtml(row.localizationType || "-")}</span>` : ""}
-          ${row.sizes.length > 1 ? `<span>${row.sizes.length}개 규격</span>` : ""}
-        </div>
+        ${row.variants.length ? renderTimelineTags(row.variants) : ""}
       </div>
-      <div class="output-size">
-        <span class="size-title">규격</span>
-        <div class="size-chip-list">
-          ${row.sizes.map((size) => renderSizeChip(size)).join("")}
-        </div>
-      </div>
+      ${row.extensions.length ? renderTimelineExtension(row.extensions) : ""}
     </article>
   `;
 }
 
-function renderSizeChip(size) {
-  const isEmpty = size === "-";
-  return `<span class="size-chip${isEmpty ? " is-empty" : ""}">${escapeHtml(size)}</span>`;
+function renderTimelineExtension(extensions) {
+  return `<span class="timeline-extension-note">확장자 : ${escapeHtml(extensions.join(", "))}</span>`;
+}
+
+function renderTimelineTags(tags) {
+  return `
+    <div class="timeline-variant-list">
+      ${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
+    </div>
+  `;
+}
+
+function getPhaseTone(phase) {
+  const tones = {
+    얼리버드: {
+      color: "#e7ddff",
+      border: "#cbb8ff",
+      ink: "#7055aa",
+    },
+    "상세페이지 오픈": {
+      color: "#ffe2f1",
+      border: "#f3bfdc",
+      ink: "#a95f88",
+    },
+    영상공개: {
+      color: "#e1ebff",
+      border: "#bdceff",
+      ink: "#5c73ad",
+    },
+  };
+  return tones[phase] || { color: "#ece8ff", border: "#cbb8ff", ink: "#7055aa" };
+}
+
+function getGroupTone(group) {
+  const tones = {
+    온사이트: {
+      color: "#5c73ad",
+      border: "#bdceff",
+      bg: "#f4f7ff",
+    },
+    사이트: {
+      color: "#5c73ad",
+      border: "#bdceff",
+      bg: "#f4f7ff",
+    },
+    오가닉: {
+      color: "#a95f88",
+      border: "#f3bfdc",
+      bg: "#fff6fb",
+    },
+  };
+  return tones[group] || { color: "#7055aa", border: "#cbb8ff", bg: "#f8f5ff" };
+}
+
+function toneStyle(tone, type) {
+  if (type === "phase") {
+    return `--timeline-phase-bg: ${tone.color}; --timeline-phase-border: ${tone.border}; --timeline-phase-ink: ${tone.ink};`;
+  }
+
+  return `--timeline-group-color: ${tone.color}; --timeline-group-border: ${tone.border}; --timeline-group-bg: ${tone.bg};`;
+}
+
+function compareGroupEntries([groupA], [groupB]) {
+  return getGroupRank(groupA) - getGroupRank(groupB);
+}
+
+function getGroupRank(group) {
+  if (group === "온사이트" || group === "사이트") return 0;
+  if (group === "오가닉" || group === "얼리버드 오가닉") return 1;
+  return 2;
 }
 
 function renderDashboardTable(selectedItems) {
@@ -549,12 +715,13 @@ function renderDashboardTable(selectedItems) {
         <thead>
           <tr>
             <th>번호</th>
-            <th>업무 구간</th>
+            <th>런칭 타임라인</th>
             <th>구분</th>
             <th>업무내용</th>
             ${showLocalizationType ? "<th>현지화 유형</th>" : ""}
             <th>코스 포맷</th>
             <th>규격</th>
+            <th>파일 확장자</th>
           </tr>
         </thead>
         <tbody>
@@ -569,6 +736,7 @@ function renderDashboardTable(selectedItems) {
                   ${showLocalizationType ? `<td>${escapeHtml(item.localizationType || "-")}</td>` : ""}
                   <td>${escapeHtml(item.courseFormat)}</td>
                   <td>${escapeHtml(item.size || "-")}</td>
+                  <td>${escapeHtml(item.fileExtension || "-")}</td>
                 </tr>
               `
             )
@@ -586,8 +754,8 @@ function renderManagementTable() {
   renderManagementHeader(showLocalizationType);
 
   if (!managedItems.length) {
-    const columnCount = showLocalizationType ? 13 : 12;
-    els.managementTableBody.innerHTML = `<tr><td colspan="${columnCount}" class="empty-state">편집할 작업 산출물이 없습니다</td></tr>`;
+    const columnCount = showLocalizationType ? 14 : 13;
+    els.managementTableBody.innerHTML = `<tr><td colspan="${columnCount}" class="empty-state">편집할 업무 항목이 없습니다</td></tr>`;
     return;
   }
 
@@ -610,6 +778,14 @@ function renderManagementTable() {
               data-id="${escapeHtml(item.id)}"
               data-field="size"
               value="${escapeHtml(item.size || "")}"
+            />
+          </td>
+          <td>
+            <input
+              class="table-input"
+              data-id="${escapeHtml(item.id)}"
+              data-field="fileExtension"
+              value="${escapeHtml(item.fileExtension || "")}"
             />
           </td>
           <td>${renderEditableSelect(item, "workIncluded")}</td>
@@ -638,10 +814,11 @@ function renderManagementHeader(showLocalizationType) {
       <th>코스 유형</th>
       ${showLocalizationType ? "<th>현지화 유형</th>" : ""}
       <th>코스 포맷</th>
-      <th>업무 구간</th>
+      <th>런칭 타임라인</th>
       <th>구분</th>
       <th>업무내용</th>
       <th>규격</th>
+      <th>파일 확장자</th>
       <th>업무유무</th>
       <th>유형적합여부</th>
       <th>메모</th>
@@ -669,7 +846,9 @@ function updateItem(id, field, value) {
 
   overrides[id] = {
     ...(overrides[id] || {}),
-    [field]: ["size", "memo"].includes(field) ? value : normalizeCheckValue(value),
+    [field]: ["size", "fileExtension", "memo"].includes(field)
+      ? value
+      : normalizeCheckValue(value),
   };
   items = applyOverrides(buildItems(sourceRows));
   renderList();
@@ -678,7 +857,7 @@ function updateItem(id, field, value) {
 }
 
 function updateTextField(id, field, value) {
-  if (!["size", "memo"].includes(field)) return;
+  if (!["size", "fileExtension", "memo"].includes(field)) return;
 
   const item = items.find((entry) => entry.id === id);
   if (!item) return;
@@ -689,7 +868,7 @@ function updateTextField(id, field, value) {
     [field]: value,
   };
 
-  if (field === "size") renderList();
+  if (field === "size" || field === "fileExtension") renderList();
   setSaveState("dirty");
 }
 
@@ -727,6 +906,9 @@ function importCsv(file) {
 
       nextOverrides[record.id] = {
         size: record.size || "",
+        ...(Object.prototype.hasOwnProperty.call(record, "fileExtension")
+          ? { fileExtension: record.fileExtension || "" }
+          : {}),
         memo: record.memo || "",
         workIncluded: normalizeCheckValue(record.workIncluded || "O"),
         typeFit: normalizeCheckValue(record.typeFit || "O"),
@@ -862,9 +1044,20 @@ async function initSharedSync() {
 async function fetchRemoteOverrides() {
   const { data, error } = await syncClient
     .from(dbTableName)
-    .select("id,size,memo,work_included,type_fit");
+    .select("id,size,file_extension,memo,work_included,type_fit");
 
-  if (error) throw error;
+  if (error) {
+    if (error.code !== "42703" && !String(error.message || "").includes("file_extension")) {
+      throw error;
+    }
+
+    const fallback = await syncClient
+      .from(dbTableName)
+      .select("id,size,memo,work_included,type_fit");
+    if (fallback.error) throw fallback.error;
+    return rowsToOverrides(fallback.data || []);
+  }
+
   return rowsToOverrides(data || []);
 }
 
@@ -873,18 +1066,25 @@ function rowsToOverrides(rows) {
 }
 
 function rowToOverride(row) {
-  return {
+  const override = {
     size: row.size || "",
     memo: row.memo || "",
     workIncluded: normalizeCheckValue(row.work_included || "O"),
     typeFit: normalizeCheckValue(row.type_fit || "O"),
   };
+
+  if (Object.prototype.hasOwnProperty.call(row, "file_extension")) {
+    override.fileExtension = row.file_extension || "";
+  }
+
+  return override;
 }
 
 function overrideToRow(id, override) {
   return {
     id,
     size: override.size || "",
+    file_extension: override.fileExtension || "",
     memo: override.memo || "",
     work_included: normalizeCheckValue(override.workIncluded || "O"),
     type_fit: normalizeCheckValue(override.typeFit || "O"),
@@ -1047,13 +1247,23 @@ function isLocalizationTypeActive() {
   return els.courseTypeFilter.value === "현지화";
 }
 
+function isLanguageFilterActive() {
+  return els.siteFilter.value === "GL";
+}
+
+function syncLanguageVisibility() {
+  const show = isLanguageFilterActive();
+  els.languageControl.classList.toggle("is-hidden", !show);
+  els.languageControl.setAttribute("aria-hidden", String(!show));
+  els.languageFilter.disabled = !show;
+}
+
 function syncLocalizationTypeVisibility() {
   const show = isLocalizationTypeActive();
   if (!show) {
     els.localizationTypeFilter.value = "전체";
     els.localizationTypeFilter.blur();
   }
-  els.localizationTypeControl.hidden = !show;
   els.localizationTypeControl.classList.toggle("is-hidden", !show);
   els.localizationTypeControl.setAttribute("aria-hidden", String(!show));
   els.localizationTypeFilter.disabled = !show;
@@ -1070,6 +1280,7 @@ function groupBy(source, keyGetter) {
 }
 
 function renderAll() {
+  renderGuideLinks();
   renderSiteOptions();
   renderLanguageOptions();
   renderCourseTypeOptions();

@@ -4,11 +4,15 @@ create extension if not exists pgcrypto with schema extensions;
 create table if not exists public.marketing_output_overrides (
   id text primary key,
   size text not null default '',
+  file_extension text not null default '',
   memo text not null default '',
   work_included text not null default 'O',
   type_fit text not null default 'O',
   updated_at timestamptz not null default now()
 );
+
+alter table public.marketing_output_overrides
+add column if not exists file_extension text not null default '';
 
 alter table public.marketing_output_overrides replica identity full;
 alter table public.marketing_output_overrides enable row level security;
@@ -89,19 +93,21 @@ begin
     raise exception 'invalid_edit_passcode' using errcode = '28000';
   end if;
 
-  insert into public.marketing_output_overrides (
-    id,
-    size,
-    memo,
-    work_included,
-    type_fit,
-    updated_at
-  )
-  select
-    incoming.id,
-    coalesce(incoming.size, ''),
-    coalesce(incoming.memo, ''),
-    case
+	  insert into public.marketing_output_overrides (
+	    id,
+	    size,
+	    file_extension,
+	    memo,
+	    work_included,
+	    type_fit,
+	    updated_at
+	  )
+	  select
+	    incoming.id,
+	    coalesce(incoming.size, ''),
+	    coalesce(incoming.file_extension, ''),
+	    coalesce(incoming.memo, ''),
+	    case
       when upper(trim(coalesce(incoming.work_included, 'O'))) in ('X', 'N', 'NO', 'FALSE', '0', '불필요', '미노출') then 'X'
       else 'O'
     end,
@@ -110,20 +116,22 @@ begin
       else 'O'
     end,
     now()
-  from jsonb_to_recordset(coalesce(p_rows, '[]'::jsonb)) as incoming(
-    id text,
-    size text,
-    memo text,
-    work_included text,
-    type_fit text
+	  from jsonb_to_recordset(coalesce(p_rows, '[]'::jsonb)) as incoming(
+	    id text,
+	    size text,
+	    file_extension text,
+	    memo text,
+	    work_included text,
+	    type_fit text
   )
   where incoming.id is not null
     and incoming.id <> ''
-  on conflict (id)
-  do update set
-    size = excluded.size,
-    memo = excluded.memo,
-    work_included = excluded.work_included,
+	  on conflict (id)
+	  do update set
+	    size = excluded.size,
+	    file_extension = excluded.file_extension,
+	    memo = excluded.memo,
+	    work_included = excluded.work_included,
     type_fit = excluded.type_fit,
     updated_at = excluded.updated_at;
 end;

@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>작업 산출물 대시보드 시안</title>
+    <style>
+      :root {
+        --bg: #f5f6f8;
+        --surface: #ffffff;
+        --ink: #1d252c;
+        --muted: #65717c;
+        --line: #dce2e7;
+        --line-strong: #c5ced6;
+        --teal: #087f6f;
+        --teal-dark: #075d55;
+        --navy: #263747;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: var(--ink);
+        font-family:
+          Inter, "Pretendard", "Noto Sans KR", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        font-weight: 500;
+        letter-spacing: 0;
+      }
+
+      .shell {
+        display: grid;
+        gap: 14px;
+        margin: 0 auto;
+        max-width: 1480px;
+        padding: 24px 28px 44px;
+      }
+
+      .topbar,
+      .scope-bar,
+      .phase-section {
+        background: var(--surface);
+        border: 1px solid var(--line);
+      }
+
+      .topbar {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p,
+      strong {
+        margin: 0;
+        font-weight: 500;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 1.25;
+      }
+
+      .count-pill {
+        background: #f3f4f8;
+        color: #5f6470;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 7px 9px;
+      }
+
+      .scope-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .scope-bar span,
+      .variant-chip {
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1;
+        padding: 7px 9px;
+      }
+
+      .scope-bar span {
+        background: #f3f4f8;
+        color: #5f6470;
+      }
+
+      .dashboard {
+        display: grid;
+        gap: 14px;
+      }
+
+      .phase-section {
+        border-color: var(--phase-border);
+        border-width: 2px;
+      }
+
+      .phase-header {
+        align-items: center;
+        background: var(--phase-color);
+        border-bottom: 1px solid var(--phase-border);
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 13px 16px;
+      }
+
+      .phase-header h2 {
+        color: var(--phase-ink);
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 1.32;
+      }
+
+      .phase-header strong {
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--phase-ink);
+        font-size: 14px;
+        padding: 8px 10px;
+        white-space: nowrap;
+      }
+
+      .group-grid {
+        align-items: start;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        padding: 10px;
+      }
+
+      .group-panel {
+        border: 1px solid var(--group-border);
+        border-left: 4px solid var(--group-color);
+        min-width: 0;
+      }
+
+      .group-header {
+        align-items: center;
+        background: var(--group-bg);
+        border-bottom: 1px solid var(--group-border);
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 12px;
+      }
+
+      .group-header h3 {
+        color: var(--group-color);
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1.3;
+      }
+
+      .group-header span {
+        background: #ffffff;
+        color: var(--group-color);
+        font-size: 14px;
+        font-weight: 500;
+        padding: 6px 9px;
+        white-space: nowrap;
+      }
+
+      .output-list {
+        display: grid;
+      }
+
+      .output-row {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 12px;
+      }
+
+      .output-row + .output-row {
+        border-top: 1px solid var(--line);
+      }
+
+      .output-main {
+        min-width: 0;
+      }
+
+      .output-main strong {
+        color: var(--ink);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.35;
+      }
+
+      .variant-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .variant-chip {
+        background: #f3f4f8;
+        color: #5f6470;
+        display: inline-flex;
+        font-size: 14px;
+        line-height: 1.35;
+        padding: 5px 7px;
+        white-space: nowrap;
+        word-break: keep-all;
+      }
+
+      @media (max-width: 480px) {
+        .shell {
+          padding: 18px;
+        }
+
+        .topbar,
+        .phase-header,
+        .group-header {
+          align-items: start;
+          display: grid;
+        }
+
+        .group-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .output-row {
+          grid-template-columns: 1fr;
+        }
+
+        .output-row {
+          align-items: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <h1>작업 산출물 대시보드</h1>
+        <span class="count-pill" id="totalCount"></span>
+      </header>
+
+      <section class="scope-bar" aria-label="선택 조건">
+        <span>KR</span>
+        <span>KO</span>
+        <span>오리지널</span>
+        <span>코스</span>
+      </section>
+
+      <section class="dashboard" id="dashboard"></section>
+    </main>
+
+    <script>
+      const outputs = [
+        {
+          phase: "얼리버드",
+          group: "얼리버드 오가닉",
+          name: "스토리",
+          format: "코스",
+          sizes: ["1080*1920"],
+        },
+        {
+          phase: "얼리버드",
+          group: "얼리버드 오가닉",
+          name: "연사용 공계 피드",
+          format: "코스",
+          sizes: ["1:1", "4:5"],
+        },
+        {
+          phase: "얼리버드",
+          group: "얼리버드 오가닉",
+          name: "카카오톡",
+          format: "코스",
+          sizes: ["640*800"],
+        },
+        {
+          phase: "얼리버드",
+          group: "사이트",
+          name: "코스카드 썸네일",
+          format: "코스",
+          sizes: ["432*270"],
+        },
+        {
+          phase: "상세페이지 오픈",
+          group: "사이트",
+          name: "상세페이지",
+          format: "코스",
+          sizes: ["-"],
+        },
+        {
+          phase: "상세페이지 오픈",
+          group: "사이트",
+          name: "메인배너",
+          format: "코스",
+          sizes: ["pc : 2448*680", "m : 1920*800"],
+        },
+        {
+          phase: "상세페이지 오픈",
+          group: "오가닉",
+          name: "피드",
+          format: "코스",
+          sizes: ["1:1", "4:5"],
+        },
+        {
+          phase: "상세페이지 오픈",
+          group: "오가닉",
+          name: "스토리",
+          format: "코스",
+          sizes: ["-"],
+        },
+        {
+          phase: "상세페이지 오픈",
+          group: "오가닉",
+          name: "연사용 공계 피드",
+          format: "코스",
+          sizes: ["1:1", "4:5"],
+        },
+        {
+          phase: "상세페이지 오픈",
+          group: "오가닉",
+          name: "EDM",
+          format: "코스",
+          sizes: ["-"],
+        },
+        {
+          phase: "영상공개",
+          group: "사이트",
+          name: "상세페이지 수정",
+          format: "코스",
+          sizes: ["-"],
+        },
+        {
+          phase: "영상공개",
+          group: "오가닉",
+          name: "콜로소 공계 피드",
+          format: "코스",
+          sizes: ["1:1", "4:5"],
+        },
+        {
+          phase: "영상공개",
+          group: "오가닉",
+          name: "스토리",
+          format: "코스",
+          sizes: ["-"],
+        },
+        {
+          phase: "영상공개",
+          group: "오가닉",
+          name: "연사용 오가닉",
+          format: "코스",
+          sizes: ["1:1", "4:5"],
+        },
+        {
+          phase: "영상공개",
+          group: "오가닉",
+          name: "광고",
+          format: "코스",
+          sizes: ["-"],
+        },
+      ];
+
+      const dashboard = document.getElementById("dashboard");
+      const totalCount = document.getElementById("totalCount");
+
+      totalCount.textContent = `${outputs.length}개 산출물`;
+      dashboard.innerHTML = groupBy(outputs, "phase")
+        .map(([phase, phaseItems]) => renderPhase(phase, phaseItems))
+        .join("");
+
+      function renderPhase(phase, phaseItems) {
+        const groupEntries = groupBy(phaseItems, "group").sort(compareGroupEntries);
+        return `
+          <section class="phase-section" style="${toneStyle(getPhaseTone(phase), "phase")}">
+            <header class="phase-header">
+              <div>
+                <h2>${escapeHtml(phase)}</h2>
+              </div>
+              <strong>${phaseItems.length}개 산출물</strong>
+            </header>
+            <div class="group-grid">
+              ${groupEntries.map(([group, groupItems]) => renderGroup(group, groupItems)).join("")}
+            </div>
+          </section>
+        `;
+      }
+
+      function renderGroup(group, groupItems) {
+        return `
+          <section class="group-panel" style="${toneStyle(getGroupTone(group), "group")}">
+            <header class="group-header">
+              <div>
+                <h3>${escapeHtml(group)}</h3>
+              </div>
+              <span>${groupItems.length}개</span>
+            </header>
+            <div class="output-list">
+              ${groupItems.map(renderOutput).join("")}
+            </div>
+          </section>
+        `;
+      }
+
+      function renderOutput(output) {
+        const variants = output.sizes.filter((size) => size && size !== "-");
+        const tags = [...variants, ...getExtensionTags(output)];
+        return `
+          <article class="output-row${tags.length ? " has-variants" : ""}">
+            <div class="output-main">
+              <strong>${escapeHtml(output.name)}</strong>
+            </div>
+            ${tags.length ? renderVariants(tags) : ""}
+          </article>
+        `;
+      }
+
+      function getExtensionTags(output) {
+        const extension = getFileExtension(output);
+        if (!extension) return [];
+
+        return extension
+          .split(/\s*또는\s*|,\s*|\/\s*/)
+          .map((tag) => tag.trim())
+          .filter(Boolean);
+      }
+
+      function getFileExtension(output) {
+        if (output.name === "EDM") return "jpg";
+        if (output.name === "광고" || output.group === "페이드") return "png 또는 mp4";
+        if (output.group === "오가닉" || output.group === "얼리버드 오가닉") {
+          return "webp 또는 mp4";
+        }
+        return "";
+      }
+
+      function renderVariants(variants) {
+        return `
+          <div class="variant-list">
+            ${variants
+              .map((variant) => `<span class="variant-chip">${escapeHtml(variant)}</span>`)
+              .join("")}
+          </div>
+        `;
+      }
+
+      function groupBy(source, key) {
+        const groups = new Map();
+        source.forEach((item) => {
+          const value = item[key] || "-";
+          if (!groups.has(value)) groups.set(value, []);
+          groups.get(value).push(item);
+        });
+        return [...groups.entries()];
+      }
+
+      function getPhaseTone(phase) {
+        const tones = {
+          얼리버드: {
+            color: "#e7ddff",
+            border: "#cbb8ff",
+            ink: "#7055aa",
+          },
+          "상세페이지 오픈": {
+            color: "#ffe2f1",
+            border: "#f3bfdc",
+            ink: "#a95f88",
+          },
+          영상공개: {
+            color: "#e1ebff",
+            border: "#bdceff",
+            ink: "#5c73ad",
+          },
+        };
+        return tones[phase] || { color: "#ece8ff", border: "#cbb8ff", ink: "#7055aa" };
+      }
+
+      function getGroupTone(group) {
+        const tones = {
+          사이트: {
+            color: "#5c73ad",
+            border: "#bdceff",
+            bg: "#f4f7ff",
+          },
+          오가닉: {
+            color: "#a95f88",
+            border: "#f3bfdc",
+            bg: "#fff6fb",
+          },
+          "얼리버드 오가닉": {
+            color: "#a95f88",
+            border: "#f3bfdc",
+            bg: "#fff6fb",
+          },
+        };
+        return tones[group] || { color: "#7055aa", border: "#cbb8ff", bg: "#f8f5ff" };
+      }
+
+      function toneStyle(tone, prefix) {
+        if (prefix === "phase") {
+          return `--phase-color: ${tone.color}; --phase-border: ${tone.border}; --phase-ink: ${tone.ink};`;
+        }
+
+        return `--group-color: ${tone.color}; --group-border: ${tone.border}; --group-bg: ${tone.bg};`;
+      }
+
+      function compareGroupEntries([groupA], [groupB]) {
+        return getGroupRank(groupA) - getGroupRank(groupB);
+      }
+
+      function getGroupRank(group) {
+        if (group === "사이트") return 0;
+        if (group === "오가닉" || group === "얼리버드 오가닉") return 1;
+        return 2;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+    </script>
+  </body>
+</html>
