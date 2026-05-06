@@ -1,4 +1,5 @@
-create extension if not exists pgcrypto;
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
 
 create table if not exists public.marketing_output_overrides (
   id text primary key,
@@ -34,7 +35,7 @@ create or replace function public.set_marketing_output_passcode(p_passcode text)
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   if length(trim(coalesce(p_passcode, ''))) < 4 then
@@ -54,7 +55,7 @@ create or replace function public.verify_marketing_output_passcode(p_passcode te
 returns boolean
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   stored_hash text;
@@ -81,7 +82,7 @@ create or replace function public.save_marketing_output_overrides(
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   if not public.verify_marketing_output_passcode(p_passcode) then
