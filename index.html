@@ -59,7 +59,7 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow" id="selectedScope"></p>
-            <h2>업무 항목</h2>
+            <h2>작업 산출물</h2>
           </div>
           <span class="count-pill" id="taskCount">0개</span>
         </div>
@@ -81,6 +81,26 @@
           </table>
         </div>
       </section>
+
+      <div class="auth-modal" id="editAuthModal" hidden>
+        <div class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="editAuthTitle">
+          <h2 id="editAuthTitle">편집 인증</h2>
+          <p>운영 기준 편집은 인증번호 입력 후 접근할 수 있습니다.</p>
+          <label for="editPasscodeInput">인증번호</label>
+          <input
+            id="editPasscodeInput"
+            type="password"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="인증번호 입력"
+          />
+          <p class="auth-error" id="editAuthError"></p>
+          <div class="auth-actions">
+            <button class="ghost-button" id="cancelEditAuthBtn" type="button">취소</button>
+            <button class="primary-button" id="confirmEditAuthBtn" type="button">확인</button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script src="./config.js"></script>

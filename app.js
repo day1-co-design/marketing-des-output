@@ -60,6 +60,9 @@ let items = applyOverrides(buildItems(sourceRows));
 let hasUnsavedChanges = false;
 let syncClient = null;
 let syncChannel = null;
+let isEditAuthorized = false;
+let editPasscode = "";
+let pendingAuthorizedAction = null;
 
 const els = {
   siteFilter: document.getElementById("siteFilter"),
@@ -80,6 +83,11 @@ const els = {
   importCsvBtn: document.getElementById("importCsvBtn"),
   exportCsvBtn: document.getElementById("exportCsvBtn"),
   saveBtn: document.getElementById("saveBtn"),
+  editAuthModal: document.getElementById("editAuthModal"),
+  editPasscodeInput: document.getElementById("editPasscodeInput"),
+  editAuthError: document.getElementById("editAuthError"),
+  cancelEditAuthBtn: document.getElementById("cancelEditAuthBtn"),
+  confirmEditAuthBtn: document.getElementById("confirmEditAuthBtn"),
   tabButtons: document.querySelectorAll("[data-view]"),
   viewPanels: document.querySelectorAll("[data-panel]"),
 };
@@ -364,14 +372,173 @@ function renderList() {
     els.phaseFilter.value,
   ];
   els.selectedScope.textContent = scopeParts.join(" · ");
-  els.taskCount.textContent = `${selectedItems.length}개`;
+  els.taskCount.textContent = `${selectedItems.length}개 산출물`;
 
   if (!selectedItems.length) {
-    els.taskList.innerHTML = `<div class="empty-state">등록된 업무 구조가 없습니다</div>`;
+    els.taskList.innerHTML = `<div class="empty-state">등록된 작업 산출물이 없습니다</div>`;
     return;
   }
 
-  els.taskList.innerHTML = renderDashboardTable(selectedItems);
+  els.taskList.innerHTML = renderOutputDashboard(selectedItems);
+}
+
+function renderOutputDashboard(selectedItems) {
+  const showLocalizationType = isLocalizationTypeActive();
+  const phaseEntries = [...groupBy(selectedItems, (item) => item.phase).entries()];
+  const groupCount = unique(selectedItems.map((item) => item.group || "-")).length;
+  const formatCount = unique(selectedItems.map((item) => item.courseFormat)).length;
+  const missingSizeCount = selectedItems.filter((item) => !item.size).length;
+  const maxPhaseCount = Math.max(...phaseEntries.map(([, phaseItems]) => phaseItems.length));
+
+  return `
+    <div class="output-dashboard">
+      <div class="summary-grid" aria-label="작업 산출물 요약">
+        ${renderSummaryMetric("작업 산출물", selectedItems.length)}
+        ${renderSummaryMetric("업무 구간", phaseEntries.length)}
+        ${renderSummaryMetric("구분", groupCount)}
+        ${renderSummaryMetric("코스 포맷", formatCount)}
+        ${renderSummaryMetric("규격 미정", missingSizeCount)}
+      </div>
+      <div class="phase-overview" aria-label="업무 구간별 작업 산출물">
+        ${phaseEntries
+          .map(([phase, phaseItems]) => renderPhaseMeter(phase, phaseItems.length, maxPhaseCount))
+          .join("")}
+      </div>
+      <div class="phase-stack">
+        ${phaseEntries
+          .map(([phase, phaseItems]) =>
+            renderPhaseOutputSection(phase, phaseItems, showLocalizationType)
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderSummaryMetric(label, value) {
+  return `
+    <div class="summary-metric">
+      <span>${escapeHtml(label)}</span>
+      <strong>${value}</strong>
+    </div>
+  `;
+}
+
+function renderPhaseMeter(phase, count, maxCount) {
+  const width = maxCount ? Math.max((count / maxCount) * 100, 8) : 0;
+  return `
+    <div class="phase-meter">
+      <div class="phase-meter-head">
+        <strong>${escapeHtml(phase)}</strong>
+        <span>${count}개</span>
+      </div>
+      <div class="meter-track" aria-hidden="true">
+        <span style="width: ${width}%"></span>
+      </div>
+    </div>
+  `;
+}
+
+function renderPhaseOutputSection(phase, phaseItems, showLocalizationType) {
+  const groupEntries = [...groupBy(phaseItems, (item) => item.group || "-").entries()];
+  return `
+    <section class="phase-output-section">
+      <header class="phase-output-header">
+        <div>
+          <p>업무 구간</p>
+          <h3>${escapeHtml(phase)}</h3>
+        </div>
+        <span>${phaseItems.length}개 산출물</span>
+      </header>
+      <div class="output-group-stack">
+        ${groupEntries
+          .map(([groupName, groupItems]) =>
+            renderOutputGroup(groupName, groupItems, showLocalizationType)
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderOutputGroup(groupName, groupItems, showLocalizationType) {
+  const outputRows = buildOutputRows(groupItems, showLocalizationType);
+  return `
+    <section class="output-group">
+      <header class="output-group-header">
+        <div>
+          <span>구분</span>
+          <strong>${escapeHtml(groupName || "-")}</strong>
+        </div>
+        <em>${groupItems.length}개</em>
+      </header>
+      <div class="output-row-list">
+        ${outputRows.map((row) => renderOutputRow(row, showLocalizationType)).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function buildOutputRows(source, showLocalizationType) {
+  const rows = new Map();
+
+  source.forEach((item) => {
+    const key = [
+      item.site,
+      item.language,
+      item.courseType,
+      item.output,
+      item.courseFormat,
+      showLocalizationType ? item.localizationType : "",
+    ].join("|");
+
+    if (!rows.has(key)) {
+      rows.set(key, {
+        site: item.site,
+        language: item.language,
+        courseType: item.courseType,
+        output: item.output,
+        courseFormat: item.courseFormat,
+        localizationType: item.localizationType,
+        sizes: [],
+      });
+    }
+
+    const row = rows.get(key);
+    const size = item.size || "-";
+    if (!row.sizes.includes(size)) row.sizes.push(size);
+  });
+
+  return [...rows.values()];
+}
+
+function renderOutputRow(row, showLocalizationType) {
+  return `
+    <article class="output-row">
+      <div class="output-main">
+        <strong>${escapeHtml(row.output)}</strong>
+        <div class="output-meta">
+          ${els.siteFilter.value === "전체" ? `<span>${escapeHtml(row.site)}</span>` : ""}
+          ${els.languageFilter.value === "전체" ? `<span>${escapeHtml(row.language)}</span>` : ""}
+          ${els.courseTypeFilter.value === "전체" ? `<span>${escapeHtml(row.courseType)}</span>` : ""}
+          <span>${escapeHtml(row.courseFormat)}</span>
+          ${showLocalizationType ? `<span>${escapeHtml(row.localizationType || "-")}</span>` : ""}
+          ${row.sizes.length > 1 ? `<span>${row.sizes.length}개 규격</span>` : ""}
+        </div>
+      </div>
+      <div class="output-size">
+        <span class="size-title">규격</span>
+        <div class="size-chip-list">
+          ${row.sizes.map((size) => renderSizeChip(size)).join("")}
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderSizeChip(size) {
+  const isEmpty = size === "-";
+  return `<span class="size-chip${isEmpty ? " is-empty" : ""}">${escapeHtml(size)}</span>`;
 }
 
 function renderDashboardTable(selectedItems) {
@@ -420,7 +587,7 @@ function renderManagementTable() {
 
   if (!managedItems.length) {
     const columnCount = showLocalizationType ? 13 : 12;
-    els.managementTableBody.innerHTML = `<tr><td colspan="${columnCount}" class="empty-state">편집할 업무 항목이 없습니다</td></tr>`;
+    els.managementTableBody.innerHTML = `<tr><td colspan="${columnCount}" class="empty-state">편집할 작업 산출물이 없습니다</td></tr>`;
     return;
   }
 
@@ -767,6 +934,11 @@ async function persistOverrides() {
     return true;
   }
 
+  if (!isEditAuthorized || !editPasscode) {
+    requireEditAuthorization(() => els.saveBtn.click());
+    return false;
+  }
+
   const rows = Object.entries(overrides).map(([id, override]) => overrideToRow(id, override));
   setSyncStatus("syncing", "DB 저장 중");
 
@@ -776,10 +948,17 @@ async function persistOverrides() {
     return true;
   }
 
-  const { error } = await syncClient.from(dbTableName).upsert(rows, { onConflict: "id" });
+  const { error } = await syncClient.rpc("save_marketing_output_overrides", {
+    p_passcode: editPasscode,
+    p_rows: rows,
+  });
 
   if (error) {
     console.error(error);
+    if (String(error.message || "").includes("invalid_edit_passcode")) {
+      clearEditAuthorization();
+      openEditAuthModal();
+    }
     setSyncStatus("error", "DB 저장 실패");
     return false;
   }
@@ -787,6 +966,81 @@ async function persistOverrides() {
   setSaveState("saved");
   setSyncStatus("online", "DB 저장됨");
   return true;
+}
+
+function switchView(viewName) {
+  els.tabButtons.forEach((tab) => {
+    tab.classList.toggle("is-active", tab.dataset.view === viewName);
+  });
+  els.viewPanels.forEach((panel) => {
+    panel.classList.toggle("is-active", panel.dataset.panel === viewName);
+  });
+}
+
+function requireEditAuthorization(action) {
+  if (isEditAuthorized) {
+    action();
+    return true;
+  }
+
+  pendingAuthorizedAction = action;
+  openEditAuthModal();
+  return false;
+}
+
+function openEditAuthModal() {
+  els.editAuthError.textContent = "";
+  els.editPasscodeInput.value = "";
+  els.editAuthModal.hidden = false;
+  window.setTimeout(() => els.editPasscodeInput.focus(), 0);
+}
+
+function closeEditAuthModal() {
+  els.editAuthModal.hidden = true;
+  els.editAuthError.textContent = "";
+  els.confirmEditAuthBtn.disabled = false;
+  els.confirmEditAuthBtn.textContent = "확인";
+}
+
+function clearEditAuthorization() {
+  isEditAuthorized = false;
+  editPasscode = "";
+}
+
+async function confirmEditAuthorization() {
+  const passcode = els.editPasscodeInput.value.trim();
+
+  if (!passcode) {
+    els.editAuthError.textContent = "인증번호를 입력해주세요.";
+    return;
+  }
+
+  if (!syncClient) {
+    els.editAuthError.textContent = "DB 연결 후 편집 인증을 사용할 수 있습니다.";
+    return;
+  }
+
+  els.confirmEditAuthBtn.disabled = true;
+  els.confirmEditAuthBtn.textContent = "확인 중";
+
+  const { data, error } = await syncClient.rpc("verify_marketing_output_passcode", {
+    p_passcode: passcode,
+  });
+
+  if (error || data !== true) {
+    els.editAuthError.textContent = "인증번호가 맞지 않습니다.";
+    els.confirmEditAuthBtn.disabled = false;
+    els.confirmEditAuthBtn.textContent = "확인";
+    return;
+  }
+
+  isEditAuthorized = true;
+  editPasscode = passcode;
+  closeEditAuthModal();
+
+  const action = pendingAuthorizedAction;
+  pendingAuthorizedAction = null;
+  if (action) action();
 }
 
 function isLocalizationTypeActive() {
@@ -873,19 +1127,25 @@ els.courseFormatFilter.addEventListener("change", () => {
 els.phaseFilter.addEventListener("change", renderList);
 els.phaseFilter.addEventListener("change", renderManagementTable);
 els.exportCsvBtn.addEventListener("click", exportCsv);
-els.importCsvBtn.addEventListener("click", () => els.csvFileInput.click());
+els.importCsvBtn.addEventListener("click", () => {
+  requireEditAuthorization(() => els.csvFileInput.click());
+});
 els.csvFileInput.addEventListener("change", (event) => {
   const [file] = event.target.files || [];
-  if (file) importCsv(file);
+  if (file) {
+    requireEditAuthorization(() => importCsv(file));
+  }
   event.target.value = "";
 });
 els.managementTableBody.addEventListener("change", (event) => {
+  if (!isEditAuthorized) return;
   const target = event.target;
   if (!target.matches("[data-id][data-field]")) return;
   if (target.matches(".table-input")) return;
   updateItem(target.dataset.id, target.dataset.field, target.value);
 });
 els.managementTableBody.addEventListener("input", (event) => {
+  if (!isEditAuthorized) return;
   const target = event.target;
   if (!target.matches(".table-input[data-id][data-field]")) return;
   updateTextField(target.dataset.id, target.dataset.field, target.value);
@@ -902,11 +1162,25 @@ els.saveBtn.addEventListener("click", async () => {
 });
 els.tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    els.tabButtons.forEach((tab) => tab.classList.toggle("is-active", tab === button));
-    els.viewPanels.forEach((panel) => {
-      panel.classList.toggle("is-active", panel.dataset.panel === button.dataset.view);
-    });
+    if (button.dataset.view === "maintenance") {
+      requireEditAuthorization(() => switchView("maintenance"));
+      return;
+    }
+
+    switchView(button.dataset.view);
   });
+});
+els.cancelEditAuthBtn.addEventListener("click", () => {
+  pendingAuthorizedAction = null;
+  closeEditAuthModal();
+});
+els.confirmEditAuthBtn.addEventListener("click", confirmEditAuthorization);
+els.editPasscodeInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") confirmEditAuthorization();
+  if (event.key === "Escape") {
+    pendingAuthorizedAction = null;
+    closeEditAuthModal();
+  }
 });
 
 renderAll();
