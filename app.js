@@ -54,9 +54,12 @@ const headerMap = new Map(
 );
 
 const overrideStorageKey = "colosoDesignOutputChecks";
+const dbTableName = "marketing_output_overrides";
 let overrides = loadOverrides();
 let items = applyOverrides(buildItems(sourceRows));
 let hasUnsavedChanges = false;
+let syncClient = null;
+let syncChannel = null;
 
 const els = {
   siteFilter: document.getElementById("siteFilter"),
@@ -72,6 +75,7 @@ const els = {
   managementCount: document.getElementById("managementCount"),
   managementTableHead: document.getElementById("managementTableHead"),
   managementTableBody: document.getElementById("managementTableBody"),
+  syncStatus: document.getElementById("syncStatus"),
   csvFileInput: document.getElementById("csvFileInput"),
   importCsvBtn: document.getElementById("importCsvBtn"),
   exportCsvBtn: document.getElementById("exportCsvBtn"),
@@ -640,6 +644,151 @@ function setSaveState(state) {
   els.saveBtn.textContent = "저장";
 }
 
+function createSyncClient() {
+  const config = window.COLOSO_DB_CONFIG || {};
+  if (!config.supabaseUrl || !config.supabaseAnonKey) return null;
+  if (!window.supabase || !window.supabase.createClient) return null;
+
+  return window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+}
+
+function setSyncStatus(state, text) {
+  els.syncStatus.className = `sync-status is-${state}`;
+  els.syncStatus.textContent = text;
+}
+
+async function initSharedSync() {
+  syncClient = createSyncClient();
+
+  if (!syncClient) {
+    setSyncStatus("local", "로컬 저장");
+    return;
+  }
+
+  setSyncStatus("syncing", "DB 연결 중");
+
+  try {
+    const remoteOverrides = await fetchRemoteOverrides();
+    const hasRemoteOverrides = Object.keys(remoteOverrides).length > 0;
+    const hasLocalOverrides = Object.keys(overrides).length > 0;
+
+    if (!hasRemoteOverrides && hasLocalOverrides) {
+      setSyncStatus("syncing", "DB 저장 필요");
+      setSaveState("dirty");
+      subscribeRemoteOverrides();
+      return;
+    }
+
+    overrides = remoteOverrides;
+    localStorage.setItem(overrideStorageKey, JSON.stringify(overrides));
+    items = applyOverrides(buildItems(sourceRows));
+    renderAll();
+    setSaveState("clean");
+    setSyncStatus("online", "DB 연동");
+    subscribeRemoteOverrides();
+  } catch (error) {
+    console.error(error);
+    setSyncStatus("error", "DB 연결 실패");
+  }
+}
+
+async function fetchRemoteOverrides() {
+  const { data, error } = await syncClient
+    .from(dbTableName)
+    .select("id,size,memo,work_included,type_fit");
+
+  if (error) throw error;
+  return rowsToOverrides(data || []);
+}
+
+function rowsToOverrides(rows) {
+  return Object.fromEntries(rows.map((row) => [row.id, rowToOverride(row)]));
+}
+
+function rowToOverride(row) {
+  return {
+    size: row.size || "",
+    memo: row.memo || "",
+    workIncluded: normalizeCheckValue(row.work_included || "O"),
+    typeFit: normalizeCheckValue(row.type_fit || "O"),
+  };
+}
+
+function overrideToRow(id, override) {
+  return {
+    id,
+    size: override.size || "",
+    memo: override.memo || "",
+    work_included: normalizeCheckValue(override.workIncluded || "O"),
+    type_fit: normalizeCheckValue(override.typeFit || "O"),
+    updated_at: new Date().toISOString(),
+  };
+}
+
+function subscribeRemoteOverrides() {
+  if (syncChannel) return;
+
+  syncChannel = syncClient
+    .channel("marketing-output-overrides")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: dbTableName },
+      handleRemoteOverrideChange
+    )
+    .subscribe((status) => {
+      if (status === "SUBSCRIBED") setSyncStatus("online", "DB 실시간 연동");
+    });
+}
+
+function handleRemoteOverrideChange(payload) {
+  if (hasUnsavedChanges) {
+    setSyncStatus("syncing", "원격 변경 대기");
+    return;
+  }
+
+  if (payload.eventType === "DELETE" && payload.old && payload.old.id) {
+    delete overrides[payload.old.id];
+  } else if (payload.new && payload.new.id) {
+    overrides[payload.new.id] = rowToOverride(payload.new);
+  }
+
+  localStorage.setItem(overrideStorageKey, JSON.stringify(overrides));
+  items = applyOverrides(buildItems(sourceRows));
+  renderAll();
+  setSaveState("clean");
+  setSyncStatus("online", "DB 동기화됨");
+}
+
+async function persistOverrides() {
+  localStorage.setItem(overrideStorageKey, JSON.stringify(overrides));
+
+  if (!syncClient) {
+    setSaveState("saved");
+    return true;
+  }
+
+  const rows = Object.entries(overrides).map(([id, override]) => overrideToRow(id, override));
+  setSyncStatus("syncing", "DB 저장 중");
+
+  if (!rows.length) {
+    setSaveState("saved");
+    setSyncStatus("online", "DB 연동");
+    return true;
+  }
+
+  const { error } = await syncClient.from(dbTableName).upsert(rows, { onConflict: "id" });
+
+  if (error) {
+    console.error(error);
+    setSyncStatus("error", "DB 저장 실패");
+    return false;
+  }
+
+  setSaveState("saved");
+  setSyncStatus("online", "DB 저장됨");
+  return true;
+}
+
 function isLocalizationTypeActive() {
   return els.courseTypeFilter.value === "현지화";
 }
@@ -741,12 +890,14 @@ els.managementTableBody.addEventListener("input", (event) => {
   if (!target.matches(".table-input[data-id][data-field]")) return;
   updateTextField(target.dataset.id, target.dataset.field, target.value);
 });
-els.saveBtn.addEventListener("click", () => {
+els.saveBtn.addEventListener("click", async () => {
   if (!hasUnsavedChanges) return;
-  localStorage.setItem(overrideStorageKey, JSON.stringify(overrides));
-  setSaveState("saved");
+  const isSaved = await persistOverrides();
+  if (!isSaved) return;
+
   window.setTimeout(() => {
     setSaveState("clean");
+    if (syncClient) setSyncStatus("online", "DB 실시간 연동");
   }, 1200);
 });
 els.tabButtons.forEach((button) => {
@@ -760,3 +911,4 @@ els.tabButtons.forEach((button) => {
 
 renderAll();
 setSaveState("clean");
+initSharedSync();

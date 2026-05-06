@@ -13,6 +13,7 @@
           <h1>콜로소 마케팅 디자인 산출물 관리 대시보드</h1>
         </div>
         <div class="top-actions">
+          <span class="sync-status is-local" id="syncStatus">로컬 저장</span>
           <input id="csvFileInput" type="file" accept=".csv" hidden />
           <button class="ghost-button" id="importCsvBtn" type="button">CSV 업로드</button>
           <button class="primary-button" id="exportCsvBtn" type="button">CSV 내보내기</button>
@@ -82,6 +83,8 @@
       </section>
     </main>
 
+    <script src="./config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./app.js"></script>
   </body>
 </html>
