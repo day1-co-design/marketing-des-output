@@ -136,6 +136,15 @@ body {
   color: var(--ink);
 }
 
+.primary-button:disabled,
+.ghost-button:disabled,
+.tab-button:disabled {
+  background: #eef1f4;
+  border-color: #d8e0e6;
+  color: #8a97a3;
+  cursor: not-allowed;
+}
+
 .sync-status {
   border: 1px solid var(--line);
   border-radius: 999px;

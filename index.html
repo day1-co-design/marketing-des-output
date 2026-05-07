@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>콜로소 마케팅 디자인 산출물 관리 대시보드</title>
-    <link rel="stylesheet" href="./styles.css?v=20260507-gl-th-original-note" />
+    <link rel="stylesheet" href="./styles.css?v=20260507-disable-maintenance" />
   </head>
   <body>
     <main class="app-shell">
@@ -16,9 +16,19 @@
           <span class="sync-status is-local" id="syncStatus">로컬 저장</span>
           <button class="tab-button is-active" type="button" data-view="dashboard">대시보드</button>
           <input id="csvFileInput" type="file" accept=".csv" hidden />
-          <button class="ghost-button" id="importCsvBtn" type="button">CSV 업로드</button>
+          <button
+            class="ghost-button"
+            id="importCsvBtn"
+            type="button"
+            disabled
+            aria-disabled="true"
+          >
+            CSV 업로드
+          </button>
           <button class="primary-button" id="exportCsvBtn" type="button">CSV 내보내기</button>
-          <button class="tab-button" type="button" data-view="maintenance">운영 기준 편집</button>
+          <button class="tab-button" type="button" data-view="maintenance" disabled aria-disabled="true">
+            운영 기준 편집
+          </button>
           <button class="save-button" id="saveBtn" type="button" disabled>저장</button>
         </div>
       </header>
@@ -107,6 +117,6 @@
 
     <script src="./config.js?v=20260507-hide-dubbing-filters"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./app.js?v=20260507-gl-th-original-note"></script>
+    <script src="./app.js?v=20260507-disable-maintenance"></script>
   </body>
 </html>

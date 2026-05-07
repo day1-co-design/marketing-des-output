@@ -151,7 +151,7 @@ function buildItems(rows) {
 
   return siteLanguageOptions.flatMap((option) =>
     courseTypes.flatMap((courseType) => {
-      const localizationTypes = getLocalizationTypes(option.site, courseType);
+      const localizationTypes = getLocalizationTypes(option.site, option.language, courseType);
 
       return courseFormatOptions.flatMap((courseFormat) =>
         localizationTypes.flatMap((localizationType) =>
@@ -183,9 +183,12 @@ function isAvailableForCourseFormat(item, courseFormat) {
   return true;
 }
 
-function getLocalizationTypes(site, courseType) {
+function getLocalizationTypes(site, language, courseType) {
   if (courseType !== "현지화") return ["-"];
   if (["KR", "JP"].includes(site)) {
+    return localizationTypeOptions.filter((type) => type !== "확장");
+  }
+  if (site === "GL" && language === "EN") {
     return localizationTypeOptions.filter((type) => type !== "확장");
   }
   return localizationTypeOptions;
@@ -1656,6 +1659,7 @@ els.phaseFilter.addEventListener("change", renderList);
 els.phaseFilter.addEventListener("change", renderManagementTable);
 els.exportCsvBtn.addEventListener("click", exportCsv);
 els.importCsvBtn.addEventListener("click", () => {
+  if (els.importCsvBtn.disabled) return;
   requireEditAuthorization(() => els.csvFileInput.click());
 });
 els.csvFileInput.addEventListener("change", (event) => {
@@ -1690,6 +1694,7 @@ els.saveBtn.addEventListener("click", async () => {
 });
 els.tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    if (button.disabled) return;
     if (button.dataset.view === "maintenance") {
       requireEditAuthorization(() => switchView("maintenance"));
       return;
