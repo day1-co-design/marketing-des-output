@@ -5,6 +5,8 @@ create table if not exists public.marketing_output_overrides (
   id text primary key,
   size text not null default '',
   file_extension text not null default '',
+  request_owner text not null default '',
+  work_owner text not null default '',
   memo text not null default '',
   work_included text not null default 'O',
   type_fit text not null default 'O',
@@ -13,6 +15,12 @@ create table if not exists public.marketing_output_overrides (
 
 alter table public.marketing_output_overrides
 add column if not exists file_extension text not null default '';
+
+alter table public.marketing_output_overrides
+add column if not exists request_owner text not null default '';
+
+alter table public.marketing_output_overrides
+add column if not exists work_owner text not null default '';
 
 alter table public.marketing_output_overrides replica identity full;
 alter table public.marketing_output_overrides enable row level security;
@@ -97,6 +105,8 @@ begin
     id,
     size,
     file_extension,
+    request_owner,
+    work_owner,
     memo,
     work_included,
     type_fit,
@@ -106,6 +116,8 @@ begin
     incoming.id,
     coalesce(incoming.size, ''),
     coalesce(incoming.file_extension, ''),
+    coalesce(incoming.request_owner, ''),
+    coalesce(incoming.work_owner, ''),
     coalesce(incoming.memo, ''),
     case
       when upper(trim(coalesce(incoming.work_included, 'O'))) in ('X', 'N', 'NO', 'FALSE', '0', '불필요', '미노출') then 'X'
@@ -120,6 +132,8 @@ begin
     id text,
     size text,
     file_extension text,
+    request_owner text,
+    work_owner text,
     memo text,
     work_included text,
     type_fit text
@@ -130,6 +144,8 @@ begin
   do update set
     size = excluded.size,
     file_extension = excluded.file_extension,
+    request_owner = excluded.request_owner,
+    work_owner = excluded.work_owner,
     memo = excluded.memo,
     work_included = excluded.work_included,
     type_fit = excluded.type_fit,

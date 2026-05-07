@@ -418,6 +418,10 @@ h2 {
   width: 100%;
 }
 
+.management-table {
+  min-width: 1280px;
+}
+
 .dashboard-table th,
 .dashboard-table td,
 .management-table th,

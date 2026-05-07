@@ -47,6 +47,8 @@ const csvColumns = [
   { key: "phase", label: "런칭 타임라인" },
   { key: "group", label: "구분" },
   { key: "output", label: "업무내용" },
+  { key: "requestOwner", label: "작업요청주체" },
+  { key: "workOwner", label: "작업주체" },
   { key: "size", label: "규격" },
   { key: "fileExtension", label: "파일 확장자" },
   { key: "workIncluded", label: "업무유무" },
@@ -64,11 +66,17 @@ headerMap.set("업무구간", "phase");
 headerMap.set("업무 구간", "phase");
 headerMap.set("런칭타임라인", "phase");
 headerMap.set("파일확장자", "fileExtension");
+headerMap.set("작업 요청 주체", "requestOwner");
+headerMap.set("작업요청자", "requestOwner");
+headerMap.set("작업 주체", "workOwner");
 
 const overrideStorageKey = "colosoDesignOutputChecks";
 const dbTableName = "marketing_output_overrides";
-const remoteOverrideColumns = "id,size,file_extension,memo,work_included,type_fit";
-const remoteOverrideFallbackColumns = "id,size,memo,work_included,type_fit";
+const editableTextFields = ["size", "fileExtension", "requestOwner", "workOwner", "memo"];
+const remoteOverrideColumns =
+  "id,size,file_extension,request_owner,work_owner,memo,work_included,type_fit";
+const remoteOverrideFallbackColumns = "id,size,file_extension,memo,work_included,type_fit";
+const remoteOverrideLegacyColumns = "id,size,memo,work_included,type_fit";
 const remoteOverridePageSize = 1000;
 let overrides = loadOverrides();
 let items = applyOverrides(buildItems(sourceRows));
@@ -303,6 +311,8 @@ function withDefaults(item) {
     ...item,
     id: makeId(item),
     fileExtension: item.fileExtension || getFileExtension(item),
+    requestOwner: item.requestOwner || "",
+    workOwner: item.workOwner || "",
     memo: item.memo || "",
     workIncluded: item.workIncluded || getDefaultWorkIncluded(item),
     typeFit: item.typeFit || "O",
@@ -567,6 +577,8 @@ function dedupeItems(source) {
       item.output,
       item.size,
       item.fileExtension,
+      item.requestOwner,
+      item.workOwner,
       item.workIncluded,
       item.typeFit,
     ].join("|");
@@ -865,7 +877,7 @@ function renderManagementTable() {
   renderManagementHeader(showLocalizationType);
 
   if (!managedItems.length) {
-    const columnCount = showLocalizationType ? 14 : 13;
+    const columnCount = showLocalizationType ? 16 : 15;
     els.managementTableBody.innerHTML = `<tr><td colspan="${columnCount}" class="empty-state">편집할 업무 항목이 없습니다</td></tr>`;
     return;
   }
@@ -883,6 +895,24 @@ function renderManagementTable() {
           <td>${escapeHtml(item.phase)}</td>
           <td>${escapeHtml(item.group || "-")}</td>
           <td class="primary-cell">${escapeHtml(item.output)}</td>
+          <td>
+            <input
+              class="table-input"
+              data-id="${escapeHtml(item.id)}"
+              data-field="requestOwner"
+              placeholder="작업요청주체"
+              value="${escapeHtml(item.requestOwner || "")}"
+            />
+          </td>
+          <td>
+            <input
+              class="table-input"
+              data-id="${escapeHtml(item.id)}"
+              data-field="workOwner"
+              placeholder="작업주체"
+              value="${escapeHtml(item.workOwner || "")}"
+            />
+          </td>
           <td>
             <input
               class="table-input"
@@ -928,6 +958,8 @@ function renderManagementHeader(showLocalizationType) {
       <th>런칭 타임라인</th>
       <th>구분</th>
       <th>업무내용</th>
+      <th>작업요청주체</th>
+      <th>작업주체</th>
       <th>규격</th>
       <th>파일 확장자</th>
       <th>업무유무</th>
@@ -958,7 +990,7 @@ function updateItem(id, field, value) {
   const normalizedValue = field === "size" ? normalizeSizeValue(value) : value;
   overrides[id] = {
     ...(overrides[id] || {}),
-    [field]: ["size", "fileExtension", "memo"].includes(field)
+    [field]: editableTextFields.includes(field)
       ? normalizedValue
       : normalizeCheckValue(value),
   };
@@ -969,7 +1001,7 @@ function updateItem(id, field, value) {
 }
 
 function updateTextField(id, field, value) {
-  if (!["size", "fileExtension", "memo"].includes(field)) return;
+  if (!editableTextFields.includes(field)) return;
 
   const item = items.find((entry) => entry.id === id);
   if (!item) return;
@@ -1021,6 +1053,12 @@ function importCsv(file) {
         size: normalizeSizeValue(record.size || ""),
         ...(Object.prototype.hasOwnProperty.call(record, "fileExtension")
           ? { fileExtension: record.fileExtension || "" }
+          : {}),
+        ...(Object.prototype.hasOwnProperty.call(record, "requestOwner")
+          ? { requestOwner: record.requestOwner || "" }
+          : {}),
+        ...(Object.prototype.hasOwnProperty.call(record, "workOwner")
+          ? { workOwner: record.workOwner || "" }
           : {}),
         memo: record.memo || "",
         workIncluded: normalizeCheckValue(record.workIncluded || "O"),
@@ -1165,8 +1203,14 @@ async function fetchRemoteOverrides() {
   } catch (error) {
     if (!isMissingFileExtensionColumnError(error)) throw error;
     isFileExtensionColumnMissing = true;
-    const rows = await fetchAllRemoteOverrideRows(remoteOverrideFallbackColumns);
-    return rowsToOverrides(rows);
+    try {
+      const rows = await fetchAllRemoteOverrideRows(remoteOverrideFallbackColumns);
+      return rowsToOverrides(rows);
+    } catch (fallbackError) {
+      if (!isMissingFileExtensionColumnError(fallbackError)) throw fallbackError;
+      const rows = await fetchAllRemoteOverrideRows(remoteOverrideLegacyColumns);
+      return rowsToOverrides(rows);
+    }
   }
 }
 
@@ -1209,6 +1253,12 @@ function rowToOverride(row) {
   if (Object.prototype.hasOwnProperty.call(row, "file_extension")) {
     override.fileExtension = row.file_extension || "";
   }
+  if (Object.prototype.hasOwnProperty.call(row, "request_owner")) {
+    override.requestOwner = row.request_owner || "";
+  }
+  if (Object.prototype.hasOwnProperty.call(row, "work_owner")) {
+    override.workOwner = row.work_owner || "";
+  }
 
   return override;
 }
@@ -1218,6 +1268,8 @@ function overrideToRow(id, override) {
     id,
     size: normalizeSizeValue(override.size || ""),
     file_extension: override.fileExtension || "",
+    request_owner: override.requestOwner || "",
+    work_owner: override.workOwner || "",
     memo: override.memo || "",
     work_included: normalizeCheckValue(override.workIncluded || "O"),
     type_fit: normalizeCheckValue(override.typeFit || "O"),
@@ -1329,7 +1381,15 @@ async function verifyRemotePersisted(expectedOverrides) {
 
     const hasMismatch = Object.entries(expectedOverrides).some(([id, expected]) => {
       const actual = remoteOverrides[id] || {};
-      return ["size", "fileExtension", "memo", "workIncluded", "typeFit"].some((field) => {
+      return [
+        "size",
+        "fileExtension",
+        "requestOwner",
+        "workOwner",
+        "memo",
+        "workIncluded",
+        "typeFit",
+      ].some((field) => {
         if (!Object.prototype.hasOwnProperty.call(expected, field)) return false;
         const expectedValue =
           field === "workIncluded" || field === "typeFit"
