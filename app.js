@@ -772,7 +772,7 @@ function buildTimelineOutputRows(source) {
 }
 
 function shouldShowWorkOwner(workOwner) {
-  return workOwner === "마케터" || workOwner === "작업주체 확인 필요";
+  return ["마케터", "현지화", "작업주체 확인 필요"].includes(workOwner);
 }
 
 function getExtensionTags(fileExtension) {
