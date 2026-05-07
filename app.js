@@ -233,9 +233,34 @@ function normalizeOutput(output) {
   return trimmedOutput;
 }
 
+function normalizeSizeValue(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+
+  const replacements = new Map([
+    ["1:01", "1:1"],
+    ["01:01", "1:1"],
+    ["1:01:00", "1:1"],
+    ["01:01:00", "1:1"],
+    ["4:05", "4:5"],
+    ["04:05", "4:5"],
+    ["4:05:00", "4:5"],
+    ["04:05:00", "4:5"],
+  ]);
+
+  return text
+    .split(",")
+    .map((part) => {
+      const trimmed = part.trim();
+      const compact = trimmed.replace(/\s+/g, "");
+      return replacements.get(compact) || trimmed;
+    })
+    .join(", ");
+}
+
 function normalizeSize(item) {
   if (item.group === "페이드" && item.output === "광고") return "광고 소재에 따라 상이";
-  return item.size;
+  return normalizeSizeValue(item.size);
 }
 
 function withDefaults(item) {
@@ -280,17 +305,36 @@ function loadOverrides() {
 
   try {
     const parsed = JSON.parse(saved);
-    return parsed && typeof parsed === "object" ? parsed : {};
+    return parsed && typeof parsed === "object" ? normalizeOverridesMap(parsed) : {};
   } catch {
     return {};
   }
 }
 
 function applyOverrides(baseItems) {
-  return baseItems.map((item) => ({
-    ...item,
-    ...(getItemOverride(item) || {}),
-  }));
+  return baseItems.map((item) => {
+    const override = normalizeOverride(getItemOverride(item) || {});
+    return {
+      ...item,
+      ...override,
+    };
+  });
+}
+
+function normalizeOverridesMap(map) {
+  return Object.fromEntries(
+    Object.entries(map).map(([id, override]) => [id, normalizeOverride(override)])
+  );
+}
+
+function normalizeOverride(override) {
+  if (!override || typeof override !== "object") return {};
+
+  const normalized = { ...override };
+  if (Object.prototype.hasOwnProperty.call(normalized, "size")) {
+    normalized.size = normalizeSizeValue(normalized.size);
+  }
+  return normalized;
 }
 
 function getItemOverride(item) {
@@ -618,7 +662,7 @@ function getExtensionTags(fileExtension) {
 }
 
 function getSizeTags(size) {
-  const value = String(size || "").trim();
+  const value = normalizeSizeValue(size);
   if (!value || value === "-") return [];
 
   return value
@@ -848,10 +892,11 @@ function updateItem(id, field, value) {
   const item = items.find((entry) => entry.id === id);
   if (!item) return;
 
+  const normalizedValue = field === "size" ? normalizeSizeValue(value) : value;
   overrides[id] = {
     ...(overrides[id] || {}),
     [field]: ["size", "fileExtension", "memo"].includes(field)
-      ? value
+      ? normalizedValue
       : normalizeCheckValue(value),
   };
   items = applyOverrides(buildItems(sourceRows));
@@ -866,10 +911,11 @@ function updateTextField(id, field, value) {
   const item = items.find((entry) => entry.id === id);
   if (!item) return;
 
-  item[field] = value;
+  const normalizedValue = field === "size" ? normalizeSizeValue(value) : value;
+  item[field] = normalizedValue;
   overrides[id] = {
     ...(overrides[id] || {}),
-    [field]: value,
+    [field]: normalizedValue,
   };
 
   if (field === "size" || field === "fileExtension") renderList();
@@ -909,7 +955,7 @@ function importCsv(file) {
       if (!record.id) return;
 
       nextOverrides[record.id] = {
-        size: record.size || "",
+        size: normalizeSizeValue(record.size || ""),
         ...(Object.prototype.hasOwnProperty.call(record, "fileExtension")
           ? { fileExtension: record.fileExtension || "" }
           : {}),
@@ -1091,7 +1137,7 @@ function rowsToOverrides(rows) {
 
 function rowToOverride(row) {
   const override = {
-    size: row.size || "",
+    size: normalizeSizeValue(row.size || ""),
     memo: row.memo || "",
     workIncluded: normalizeCheckValue(row.work_included || "O"),
     typeFit: normalizeCheckValue(row.type_fit || "O"),
@@ -1107,7 +1153,7 @@ function rowToOverride(row) {
 function overrideToRow(id, override) {
   return {
     id,
-    size: override.size || "",
+    size: normalizeSizeValue(override.size || ""),
     file_extension: override.fileExtension || "",
     memo: override.memo || "",
     work_included: normalizeCheckValue(override.workIncluded || "O"),
