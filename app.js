@@ -144,20 +144,29 @@ function buildItems(rows) {
 
       return courseFormatOptions.flatMap((courseFormat) =>
         localizationTypes.flatMap((localizationType) =>
-          normalizedBaseItems.map((item) => ({
-            ...withDefaults({
-              site: option.site,
-              language: option.language,
-              courseType,
-              courseFormat,
-              localizationType,
-              ...item,
-            }),
-          }))
+          normalizedBaseItems
+            .filter((item) => isAvailableForCourseFormat(item, courseFormat))
+            .map((item) => ({
+              ...withDefaults({
+                site: option.site,
+                language: option.language,
+                courseType,
+                courseFormat,
+                localizationType,
+                ...item,
+              }),
+            }))
         )
       );
     })
   );
+}
+
+function isAvailableForCourseFormat(item, courseFormat) {
+  if (item.group === "온사이트" && item.output === "포맷 전용 페이지") {
+    return courseFormat === "시그니처";
+  }
+  return true;
 }
 
 function getLocalizationTypes(site, courseType) {
