@@ -67,6 +67,9 @@ headerMap.set("파일확장자", "fileExtension");
 
 const overrideStorageKey = "colosoDesignOutputChecks";
 const dbTableName = "marketing_output_overrides";
+const remoteOverrideColumns = "id,size,file_extension,memo,work_included,type_fit";
+const remoteOverrideFallbackColumns = "id,size,memo,work_included,type_fit";
+const remoteOverridePageSize = 1000;
 let overrides = loadOverrides();
 let items = applyOverrides(buildItems(sourceRows));
 let hasUnsavedChanges = false;
@@ -1046,25 +1049,40 @@ async function initSharedSync() {
 }
 
 async function fetchRemoteOverrides() {
-  const { data, error } = await syncClient
-    .from(dbTableName)
-    .select("id,size,file_extension,memo,work_included,type_fit");
-
-  if (error) {
-    if (error.code !== "42703" && !String(error.message || "").includes("file_extension")) {
-      throw error;
-    }
-
+  try {
+    const rows = await fetchAllRemoteOverrideRows(remoteOverrideColumns);
+    isFileExtensionColumnMissing = false;
+    return rowsToOverrides(rows);
+  } catch (error) {
+    if (!isMissingFileExtensionColumnError(error)) throw error;
     isFileExtensionColumnMissing = true;
-    const fallback = await syncClient
+    const rows = await fetchAllRemoteOverrideRows(remoteOverrideFallbackColumns);
+    return rowsToOverrides(rows);
+  }
+}
+
+function isMissingFileExtensionColumnError(error) {
+  return error.code === "42703" || String(error.message || "").includes("file_extension");
+}
+
+async function fetchAllRemoteOverrideRows(columns) {
+  const rows = [];
+  let from = 0;
+
+  while (true) {
+    const { data, error } = await syncClient
       .from(dbTableName)
-      .select("id,size,memo,work_included,type_fit");
-    if (fallback.error) throw fallback.error;
-    return rowsToOverrides(fallback.data || []);
+      .select(columns)
+      .range(from, from + remoteOverridePageSize - 1);
+
+    if (error) throw error;
+    rows.push(...(data || []));
+
+    if (!data || data.length < remoteOverridePageSize) break;
+    from += remoteOverridePageSize;
   }
 
-  isFileExtensionColumnMissing = false;
-  return rowsToOverrides(data || []);
+  return rows;
 }
 
 function rowsToOverrides(rows) {
