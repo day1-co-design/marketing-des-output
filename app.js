@@ -316,7 +316,6 @@ function withDefaults(item) {
   return {
     ...item,
     id: makeId(item),
-    size: getDefaultSize(item),
     fileExtension: item.fileExtension || getFileExtension(item),
     requestOwner: item.requestOwner || "",
     workOwner: item.workOwner || getDefaultWorkOwner(item),
@@ -327,12 +326,6 @@ function withDefaults(item) {
 }
 
 function getDefaultWorkIncluded(item) {
-  if (isVideoOrganicOutput(item)) {
-    if (isKrOriginalVideoOfficialFeed(item)) return "O";
-    if (isJpOrGlVideoOfficialFeed(item)) return item.size === "4:5" ? "O" : "X";
-    if (item.site === "JP" && item.output === "연사용 피드") return "O";
-    return "X";
-  }
   if (item.group === "오가닉" && item.output === "연사용 스토리") {
     return item.phase === "얼리버드" ? "O" : "X";
   }
@@ -340,41 +333,10 @@ function getDefaultWorkIncluded(item) {
 }
 
 function getDefaultWorkOwner(item) {
-  if (isKrOriginalVideoOfficialFeed(item)) {
-    return "마케터";
-  }
   if (item.site === "KR" && item.group === "페이드" && item.output === "광고") {
     return "마케터";
   }
   return "";
-}
-
-function getDefaultSize(item) {
-  if (isKrOriginalVideoOfficialFeed(item)) {
-    return "필요시에만 제작 및 확인 필요";
-  }
-  return item.size || "";
-}
-
-function isVideoOrganicOutput(item) {
-  return item.phase === "영상공개" && item.group === "오가닉";
-}
-
-function isKrOriginalVideoOfficialFeed(item) {
-  return (
-    isVideoOrganicOutput(item) &&
-    item.site === "KR" &&
-    item.courseType === "오리지널" &&
-    item.output === "공계용 피드"
-  );
-}
-
-function isJpOrGlVideoOfficialFeed(item) {
-  return (
-    isVideoOrganicOutput(item) &&
-    ["JP", "GL"].includes(item.site) &&
-    item.output === "공계용 피드"
-  );
 }
 
 function getFileExtension(item) {
