@@ -107,6 +107,7 @@ cd "/Users/semikim/Documents/New project"
 ```
 
 자동 커밋 메시지는 `Auto-sync marketing outputs: YYYY-MM-DD HH:MM:SS +0900` 형식입니다.
+자동 푸시 로그는 요청/완료 시각을 함께 남깁니다. 예: `Push complete: pushed 1 commit(s) to origin/main. requested_at="YYYY-MM-DD HH:MM:SS +0900" completed_at="YYYY-MM-DD HH:MM:SS +0900" elapsed=2s.`
 
 로그인 후 자동 실행까지 필요하면 macOS LaunchAgent를 설치할 수 있습니다.
 

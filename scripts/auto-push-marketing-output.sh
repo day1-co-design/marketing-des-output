@@ -66,7 +66,11 @@ ahead_count() {
 }
 
 sync_once() {
-  local count commit_message
+  local count commit_message request_time request_epoch completed_time completed_epoch elapsed
+
+  request_time="$(date '+%Y-%m-%d %H:%M:%S %z')"
+  request_epoch="$(date +%s)"
+  log "Push request received. requested_at=\"$request_time\" target=$remote/$branch."
 
   if git_operation_in_progress; then
     log "A git operation is already in progress. Resolve it before auto-push can continue."
@@ -99,13 +103,19 @@ sync_once() {
   count="$(ahead_count)"
   if [ "${count:-0}" -gt 0 ] 2>/dev/null; then
     if git push "$remote" "HEAD:$branch"; then
-      log "Pushed $count commit(s) to $remote/$branch."
+      completed_time="$(date '+%Y-%m-%d %H:%M:%S %z')"
+      completed_epoch="$(date +%s)"
+      elapsed=$((completed_epoch - request_epoch))
+      log "Push complete: pushed $count commit(s) to $remote/$branch. requested_at=\"$request_time\" completed_at=\"$completed_time\" elapsed=${elapsed}s."
     else
       log "Push failed. Check GitHub authentication or network state."
       return 1
     fi
   else
-    log "Nothing to push."
+    completed_time="$(date '+%Y-%m-%d %H:%M:%S %z')"
+    completed_epoch="$(date +%s)"
+    elapsed=$((completed_epoch - request_epoch))
+    log "Nothing to push. requested_at=\"$request_time\" completed_at=\"$completed_time\" elapsed=${elapsed}s."
   fi
 }
 
