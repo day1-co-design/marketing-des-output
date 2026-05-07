@@ -73,7 +73,7 @@ headerMap.set("작업 주체", "workOwner");
 const overrideStorageKey = "colosoDesignOutputChecks";
 const dbTableName = "marketing_output_overrides";
 const editableTextFields = ["size", "fileExtension", "requestOwner", "workOwner", "memo"];
-const ownerOptions = ["", "기획", "마케터", "현지화", "디자인"];
+const ownerOptions = ["", "기획", "마케터", "현지화", "디자인", "작업주체 확인 필요"];
 const remoteOverrideColumns =
   "id,size,file_extension,request_owner,work_owner,memo,work_included,type_fit";
 const remoteOverrideFallbackColumns = "id,size,file_extension,memo,work_included,type_fit";
@@ -745,7 +745,7 @@ function buildTimelineOutputRows(source) {
 }
 
 function shouldShowWorkOwner(workOwner) {
-  return workOwner === "마케터";
+  return workOwner === "마케터" || workOwner === "작업주체 확인 필요";
 }
 
 function getExtensionTags(fileExtension) {
