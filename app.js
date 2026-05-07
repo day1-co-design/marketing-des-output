@@ -646,7 +646,7 @@ function renderList() {
 
 function isDubbingDiscussionScope() {
   return (
-    ["KR", "JP"].includes(els.siteFilter.value) &&
+    els.siteFilter.value === "KR" &&
     els.courseTypeFilter.value === "현지화" &&
     els.localizationTypeFilter.value === "더빙"
   );
