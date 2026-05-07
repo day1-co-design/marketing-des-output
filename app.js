@@ -198,8 +198,26 @@ function normalizeBaseItems(baseItems) {
     return [normalizedItem];
   });
 
+  const rehearsalStoryItems = [];
+  const rehearsalStoryKeys = new Set();
+  normalizedItems.forEach((item) => {
+    if (item.group !== "오가닉" || item.output !== "연사용 피드") return;
+
+    const key = [item.phase, item.group].join("|");
+    if (rehearsalStoryKeys.has(key)) return;
+
+    rehearsalStoryKeys.add(key);
+    rehearsalStoryItems.push({
+      ...item,
+      sourceColumn: `${item.sourceColumn}_story`,
+      output: "연사용 스토리",
+      size: "",
+    });
+  });
+
   return [
     ...normalizedItems,
+    ...rehearsalStoryItems,
     {
       sourceColumn: "trailer_thumbnail",
       phase: "상세페이지 오픈",
