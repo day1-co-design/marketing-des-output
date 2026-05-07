@@ -212,6 +212,7 @@ function normalizeBaseItems(baseItems) {
       sourceColumn: `${item.sourceColumn}_story`,
       output: "연사용 스토리",
       size: "",
+      workIncluded: item.phase === "얼리버드" ? "O" : "X",
     });
   });
 
@@ -285,11 +286,18 @@ function withDefaults(item) {
   return {
     ...item,
     id: makeId(item),
-    fileExtension: getFileExtension(item),
-    memo: "",
-    workIncluded: "O",
-    typeFit: "O",
+    fileExtension: item.fileExtension || getFileExtension(item),
+    memo: item.memo || "",
+    workIncluded: item.workIncluded || getDefaultWorkIncluded(item),
+    typeFit: item.typeFit || "O",
   };
+}
+
+function getDefaultWorkIncluded(item) {
+  if (item.group === "오가닉" && item.output === "연사용 스토리") {
+    return item.phase === "얼리버드" ? "O" : "X";
+  }
+  return "O";
 }
 
 function getFileExtension(item) {
