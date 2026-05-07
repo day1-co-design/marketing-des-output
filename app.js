@@ -140,8 +140,7 @@ function buildItems(rows) {
 
   return siteLanguageOptions.flatMap((option) =>
     courseTypes.flatMap((courseType) => {
-      const localizationTypes =
-        courseType === "현지화" ? localizationTypeOptions : ["-"];
+      const localizationTypes = getLocalizationTypes(option.site, courseType);
 
       return courseFormatOptions.flatMap((courseFormat) =>
         localizationTypes.flatMap((localizationType) =>
@@ -159,6 +158,12 @@ function buildItems(rows) {
       );
     })
   );
+}
+
+function getLocalizationTypes(site, courseType) {
+  if (courseType !== "현지화") return ["-"];
+  if (site === "KR") return localizationTypeOptions.filter((type) => type !== "확장");
+  return localizationTypeOptions;
 }
 
 function normalizeBaseItems(baseItems) {
