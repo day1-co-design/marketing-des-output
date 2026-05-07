@@ -326,6 +326,9 @@ function withDefaults(item) {
 }
 
 function getDefaultWorkIncluded(item) {
+  if (item.courseType === "현지화" && item.phase === "영상공개" && item.group === "오가닉") {
+    return "X";
+  }
   if (item.group === "오가닉" && item.output === "연사용 스토리") {
     return item.phase === "얼리버드" ? "O" : "X";
   }
