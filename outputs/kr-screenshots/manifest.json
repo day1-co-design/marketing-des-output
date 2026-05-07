@@ -1,0 +1,263 @@
+{
+  "generatedAt": "2026-05-07T09:37:56.154Z",
+  "source": "dashboard-with-live-sync",
+  "caseCount": 32,
+  "cases": [
+    {
+      "number": 1,
+      "file": "01_KR_original_course.png",
+      "label": "KR / KO / 오리지널 / 코스",
+      "selectedScope": "KR · 오리지널 · 코스 · 전체",
+      "taskCount": "19개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 2,
+      "file": "02_KR_original_signature.png",
+      "label": "KR / KO / 오리지널 / 시그니처",
+      "selectedScope": "KR · 오리지널 · 시그니처 · 전체",
+      "taskCount": "18개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 3,
+      "file": "03_KR_original_dictionary.png",
+      "label": "KR / KO / 오리지널 / 딕셔너리",
+      "selectedScope": "KR · 오리지널 · 딕셔너리 · 전체",
+      "taskCount": "16개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 4,
+      "file": "04_KR_original_asset.png",
+      "label": "KR / KO / 오리지널 / 에셋",
+      "selectedScope": "KR · 오리지널 · 에셋 · 전체",
+      "taskCount": "10개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 5,
+      "file": "05_KR_original_class.png",
+      "label": "KR / KO / 오리지널 / 클래스",
+      "selectedScope": "KR · 오리지널 · 클래스 · 전체",
+      "taskCount": "12개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 6,
+      "file": "06_KR_original_class-plus.png",
+      "label": "KR / KO / 오리지널 / 클래스 +",
+      "selectedScope": "KR · 오리지널 · 클래스 + · 전체",
+      "taskCount": "16개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 7,
+      "file": "07_KR_original_project.png",
+      "label": "KR / KO / 오리지널 / 프로젝트",
+      "selectedScope": "KR · 오리지널 · 프로젝트 · 전체",
+      "taskCount": "16개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 8,
+      "file": "08_KR_original_new.png",
+      "label": "KR / KO / 오리지널 / 신규",
+      "selectedScope": "KR · 오리지널 · 신규 · 전체",
+      "taskCount": "17개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 9,
+      "file": "09_KR_localized_closed-option_course.png",
+      "label": "KR / KO / 현지화 / 폐강옵션 / 코스",
+      "selectedScope": "KR · 현지화 · 폐강옵션 · 코스 · 전체",
+      "taskCount": "12개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 10,
+      "file": "10_KR_localized_closed-option_signature.png",
+      "label": "KR / KO / 현지화 / 폐강옵션 / 시그니처",
+      "selectedScope": "KR · 현지화 · 폐강옵션 · 시그니처 · 전체",
+      "taskCount": "14개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 11,
+      "file": "11_KR_localized_closed-option_dictionary.png",
+      "label": "KR / KO / 현지화 / 폐강옵션 / 딕셔너리",
+      "selectedScope": "KR · 현지화 · 폐강옵션 · 딕셔너리 · 전체",
+      "taskCount": "12개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 12,
+      "file": "12_KR_localized_closed-option_asset.png",
+      "label": "KR / KO / 현지화 / 폐강옵션 / 에셋",
+      "selectedScope": "KR · 현지화 · 폐강옵션 · 에셋 · 전체",
+      "taskCount": "10개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 13,
+      "file": "13_KR_localized_closed-option_class.png",
+      "label": "KR / KO / 현지화 / 폐강옵션 / 클래스",
+      "selectedScope": "KR · 현지화 · 폐강옵션 · 클래스 · 전체",
+      "taskCount": "12개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 14,
+      "file": "14_KR_localized_closed-option_class-plus.png",
+      "label": "KR / KO / 현지화 / 폐강옵션 / 클래스 +",
+      "selectedScope": "KR · 현지화 · 폐강옵션 · 클래스 + · 전체",
+      "taskCount": "12개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 15,
+      "file": "15_KR_localized_closed-option_project.png",
+      "label": "KR / KO / 현지화 / 폐강옵션 / 프로젝트",
+      "selectedScope": "KR · 현지화 · 폐강옵션 · 프로젝트 · 전체",
+      "taskCount": "12개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 16,
+      "file": "16_KR_localized_closed-option_new.png",
+      "label": "KR / KO / 현지화 / 폐강옵션 / 신규",
+      "selectedScope": "KR · 현지화 · 폐강옵션 · 신규 · 전체",
+      "taskCount": "12개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 17,
+      "file": "17_KR_localized_regular_course.png",
+      "label": "KR / KO / 현지화 / 정규 / 코스",
+      "selectedScope": "KR · 현지화 · 정규 · 코스 · 전체",
+      "taskCount": "19개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 18,
+      "file": "18_KR_localized_regular_signature.png",
+      "label": "KR / KO / 현지화 / 정규 / 시그니처",
+      "selectedScope": "KR · 현지화 · 정규 · 시그니처 · 전체",
+      "taskCount": "21개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 19,
+      "file": "19_KR_localized_regular_dictionary.png",
+      "label": "KR / KO / 현지화 / 정규 / 딕셔너리",
+      "selectedScope": "KR · 현지화 · 정규 · 딕셔너리 · 전체",
+      "taskCount": "13개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 20,
+      "file": "20_KR_localized_regular_asset.png",
+      "label": "KR / KO / 현지화 / 정규 / 에셋",
+      "selectedScope": "KR · 현지화 · 정규 · 에셋 · 전체",
+      "taskCount": "20개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 21,
+      "file": "21_KR_localized_regular_class.png",
+      "label": "KR / KO / 현지화 / 정규 / 클래스",
+      "selectedScope": "KR · 현지화 · 정규 · 클래스 · 전체",
+      "taskCount": "13개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 22,
+      "file": "22_KR_localized_regular_class-plus.png",
+      "label": "KR / KO / 현지화 / 정규 / 클래스 +",
+      "selectedScope": "KR · 현지화 · 정규 · 클래스 + · 전체",
+      "taskCount": "13개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 23,
+      "file": "23_KR_localized_regular_project.png",
+      "label": "KR / KO / 현지화 / 정규 / 프로젝트",
+      "selectedScope": "KR · 현지화 · 정규 · 프로젝트 · 전체",
+      "taskCount": "13개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 24,
+      "file": "24_KR_localized_regular_new.png",
+      "label": "KR / KO / 현지화 / 정규 / 신규",
+      "selectedScope": "KR · 현지화 · 정규 · 신규 · 전체",
+      "taskCount": "13개",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 25,
+      "file": "25_KR_localized_dubbing_course.png",
+      "label": "KR / KO / 현지화 / 더빙 / 코스",
+      "selectedScope": "KR · 현지화 · 더빙 · 코스 · 전체",
+      "taskCount": "논의 필요",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 26,
+      "file": "26_KR_localized_dubbing_signature.png",
+      "label": "KR / KO / 현지화 / 더빙 / 시그니처",
+      "selectedScope": "KR · 현지화 · 더빙 · 시그니처 · 전체",
+      "taskCount": "논의 필요",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 27,
+      "file": "27_KR_localized_dubbing_dictionary.png",
+      "label": "KR / KO / 현지화 / 더빙 / 딕셔너리",
+      "selectedScope": "KR · 현지화 · 더빙 · 딕셔너리 · 전체",
+      "taskCount": "논의 필요",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 28,
+      "file": "28_KR_localized_dubbing_asset.png",
+      "label": "KR / KO / 현지화 / 더빙 / 에셋",
+      "selectedScope": "KR · 현지화 · 더빙 · 에셋 · 전체",
+      "taskCount": "논의 필요",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 29,
+      "file": "29_KR_localized_dubbing_class.png",
+      "label": "KR / KO / 현지화 / 더빙 / 클래스",
+      "selectedScope": "KR · 현지화 · 더빙 · 클래스 · 전체",
+      "taskCount": "논의 필요",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 30,
+      "file": "30_KR_localized_dubbing_class-plus.png",
+      "label": "KR / KO / 현지화 / 더빙 / 클래스 +",
+      "selectedScope": "KR · 현지화 · 더빙 · 클래스 + · 전체",
+      "taskCount": "논의 필요",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 31,
+      "file": "31_KR_localized_dubbing_project.png",
+      "label": "KR / KO / 현지화 / 더빙 / 프로젝트",
+      "selectedScope": "KR · 현지화 · 더빙 · 프로젝트 · 전체",
+      "taskCount": "논의 필요",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    },
+    {
+      "number": 32,
+      "file": "32_KR_localized_dubbing_new.png",
+      "label": "KR / KO / 현지화 / 더빙 / 신규",
+      "selectedScope": "KR · 현지화 · 더빙 · 신규 · 전체",
+      "taskCount": "논의 필요",
+      "syncStatus": "DB 컬럼 업데이트 필요"
+    }
+  ]
+}

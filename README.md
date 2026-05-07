@@ -60,6 +60,29 @@ Branch: main
 Folder: / (root)
 ```
 
+## KR 케이스 스크린샷 생성
+
+가이드 매칭용 KR 전체 케이스 스크린샷은 아래 명령으로 다시 생성할 수 있습니다.
+
+```bash
+node scripts/generate-kr-screenshots.mjs
+```
+
+생성 결과는 `outputs/kr-screenshots/`에 저장됩니다.
+
+- `01`-`08`: 오리지널 8개 코스 포맷
+- `09`-`16`: 현지화 / 폐강옵션 8개 코스 포맷
+- `17`-`24`: 현지화 / 정규 8개 코스 포맷
+- `25`-`32`: 현지화 / 더빙 8개 코스 포맷
+- `manifest.json`: 파일명과 케이스명 매칭표
+- `index.html`: 스크린샷 확인용 갤러리
+
+DB에 저장된 최신 운영 기준까지 반영해 캡처해야 하면 네트워크 연결이 가능한 환경에서 `--live-sync` 옵션을 붙입니다.
+
+```bash
+node scripts/generate-kr-screenshots.mjs --live-sync
+```
+
 ## 자동 커밋/푸시
 
 파일 변경을 감시하다가 20초 동안 파일 쓰기가 멈추면 자동으로 커밋하고 `origin/main`에 푸시합니다. 평소 작업할 때는 터미널에서 감시 프로세스를 켜두는 방식을 권장합니다.
