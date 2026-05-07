@@ -47,13 +47,13 @@ const csvColumns = [
   { key: "phase", label: "런칭 타임라인" },
   { key: "group", label: "구분" },
   { key: "output", label: "업무내용" },
-  { key: "requestOwner", label: "작업요청주체" },
-  { key: "workOwner", label: "작업주체" },
   { key: "size", label: "규격" },
   { key: "fileExtension", label: "파일 확장자" },
   { key: "workIncluded", label: "업무유무" },
   { key: "typeFit", label: "유형적합여부" },
   { key: "memo", label: "메모" },
+  { key: "requestOwner", label: "작업요청주체" },
+  { key: "workOwner", label: "작업주체" },
 ];
 
 const headerMap = new Map(
@@ -73,6 +73,7 @@ headerMap.set("작업 주체", "workOwner");
 const overrideStorageKey = "colosoDesignOutputChecks";
 const dbTableName = "marketing_output_overrides";
 const editableTextFields = ["size", "fileExtension", "requestOwner", "workOwner", "memo"];
+const ownerOptions = ["", "기획", "마케팅", "현지화", "디자인"];
 const remoteOverrideColumns =
   "id,size,file_extension,request_owner,work_owner,memo,work_included,type_fit";
 const remoteOverrideFallbackColumns = "id,size,file_extension,memo,work_included,type_fit";
@@ -899,24 +900,6 @@ function renderManagementTable() {
             <input
               class="table-input"
               data-id="${escapeHtml(item.id)}"
-              data-field="requestOwner"
-              placeholder="작업요청주체"
-              value="${escapeHtml(item.requestOwner || "")}"
-            />
-          </td>
-          <td>
-            <input
-              class="table-input"
-              data-id="${escapeHtml(item.id)}"
-              data-field="workOwner"
-              placeholder="작업주체"
-              value="${escapeHtml(item.workOwner || "")}"
-            />
-          </td>
-          <td>
-            <input
-              class="table-input"
-              data-id="${escapeHtml(item.id)}"
               data-field="size"
               value="${escapeHtml(item.size || "")}"
             />
@@ -940,6 +923,8 @@ function renderManagementTable() {
               value="${escapeHtml(item.memo || "")}"
             />
           </td>
+          <td>${renderOwnerSelect(item, "requestOwner")}</td>
+          <td>${renderOwnerSelect(item, "workOwner")}</td>
         </tr>
       `
     )
@@ -958,13 +943,13 @@ function renderManagementHeader(showLocalizationType) {
       <th>런칭 타임라인</th>
       <th>구분</th>
       <th>업무내용</th>
-      <th>작업요청주체</th>
-      <th>작업주체</th>
       <th>규격</th>
       <th>파일 확장자</th>
       <th>업무유무</th>
       <th>유형적합여부</th>
       <th>메모</th>
+      <th>작업요청주체</th>
+      <th>작업주체</th>
     </tr>
   `;
 }
@@ -977,6 +962,24 @@ function renderEditableSelect(item, field) {
         .map(
           (option) =>
             `<option value="${option}" ${value === option ? "selected" : ""}>${option}</option>`
+        )
+        .join("")}
+    </select>
+  `;
+}
+
+function renderOwnerSelect(item, field) {
+  const value = item[field] || "";
+  const options = ownerOptions.includes(value) ? ownerOptions : [...ownerOptions, value];
+  return `
+    <select class="table-select" data-id="${escapeHtml(item.id)}" data-field="${field}">
+      ${options
+        .map(
+          (option) => `
+            <option value="${escapeHtml(option)}" ${value === option ? "selected" : ""}>
+              ${escapeHtml(option || "선택")}
+            </option>
+          `
         )
         .join("")}
     </select>
