@@ -1184,9 +1184,50 @@ async function persistOverrides() {
     return false;
   }
 
+  const isVerified = await verifyRemotePersisted(overrides);
+  if (!isVerified) {
+    setSyncStatus("error", "DB 함수 업데이트 필요");
+    return false;
+  }
+
   setSaveState("saved");
   setSyncStatus("online", "DB 저장됨");
   return true;
+}
+
+async function verifyRemotePersisted(expectedOverrides) {
+  try {
+    const remoteOverrides = await fetchRemoteOverrides();
+    if (isFileExtensionColumnMissing) return false;
+
+    const hasMismatch = Object.entries(expectedOverrides).some(([id, expected]) => {
+      const actual = remoteOverrides[id] || {};
+      return ["size", "fileExtension", "memo", "workIncluded", "typeFit"].some((field) => {
+        if (!Object.prototype.hasOwnProperty.call(expected, field)) return false;
+        const expectedValue =
+          field === "workIncluded" || field === "typeFit"
+            ? normalizeCheckValue(expected[field] || "O")
+            : String(expected[field] || "");
+        const actualValue =
+          field === "workIncluded" || field === "typeFit"
+            ? normalizeCheckValue(actual[field] || "O")
+            : String(actual[field] || "");
+        return expectedValue !== actualValue;
+      });
+    });
+
+    if (hasMismatch) return false;
+
+    overrides = remoteOverrides;
+    localStorage.setItem(overrideStorageKey, JSON.stringify(overrides));
+    items = applyOverrides(buildItems(sourceRows));
+    renderAll();
+    return true;
+  } catch (error) {
+    console.error(error);
+    setSyncStatus("error", "DB 저장 확인 실패");
+    return false;
+  }
 }
 
 function switchView(viewName) {
