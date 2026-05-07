@@ -618,13 +618,13 @@ function renderList() {
   ];
   els.selectedScope.textContent = scopeParts.join(" · ");
 
-  if (isDubbingDiscussionScope()) {
-    const siteLabel = els.siteFilter.value;
+  const discussionScope = getDiscussionScope();
+  if (discussionScope) {
     els.taskCount.textContent = "논의 필요";
     els.taskList.innerHTML = `
       <div class="discussion-state">
         <strong>추후 논의 필요</strong>
-        <span>${escapeHtml(siteLabel)} 현지화 더빙 업무 항목은 추후 확정 후 업데이트됩니다.</span>
+        <span>${escapeHtml(discussionScope.message)}</span>
       </div>
     `;
     return;
@@ -649,8 +649,32 @@ function isDubbingDiscussionScope() {
   );
 }
 
+function isGlThaiOriginalDiscussionScope() {
+  return (
+    els.siteFilter.value === "GL" &&
+    els.languageFilter.value === "TH" &&
+    els.courseTypeFilter.value === "오리지널"
+  );
+}
+
+function getDiscussionScope() {
+  if (isDubbingDiscussionScope()) {
+    return {
+      message: `${els.siteFilter.value} 현지화 더빙 업무 항목은 추후 확정 후 업데이트됩니다.`,
+    };
+  }
+
+  if (isGlThaiOriginalDiscussionScope()) {
+    return {
+      message: "GL TH 오리지널 업무 항목은 운영하지 않으며 현지화 기준으로 확인해주세요.",
+    };
+  }
+
+  return null;
+}
+
 function areDetailFiltersActive() {
-  return !isDubbingDiscussionScope();
+  return !getDiscussionScope();
 }
 
 function renderTimelineCards(selectedItems) {
