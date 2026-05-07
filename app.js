@@ -94,9 +94,11 @@ const els = {
   languageControl: document.getElementById("languageControl"),
   languageFilter: document.getElementById("languageFilter"),
   courseTypeFilter: document.getElementById("courseTypeFilter"),
+  courseFormatControl: document.getElementById("courseFormatControl"),
   courseFormatFilter: document.getElementById("courseFormatFilter"),
   localizationTypeControl: document.getElementById("localizationTypeControl"),
   localizationTypeFilter: document.getElementById("localizationTypeFilter"),
+  phaseControl: document.getElementById("phaseControl"),
   phaseFilter: document.getElementById("phaseFilter"),
   selectedScope: document.getElementById("selectedScope"),
   taskCount: document.getElementById("taskCount"),
@@ -606,13 +608,13 @@ function isNo(value) {
 }
 
 function renderList() {
+  const showDetailFilters = areDetailFiltersActive();
   const scopeParts = [
     els.siteFilter.value,
     ...(isLanguageFilterActive() ? [els.languageFilter.value] : []),
     els.courseTypeFilter.value,
     ...(isLocalizationTypeActive() ? [els.localizationTypeFilter.value] : []),
-    els.courseFormatFilter.value,
-    els.phaseFilter.value,
+    ...(showDetailFilters ? [els.courseFormatFilter.value, els.phaseFilter.value] : []),
   ];
   els.selectedScope.textContent = scopeParts.join(" · ");
 
@@ -645,6 +647,10 @@ function isDubbingDiscussionScope() {
     els.courseTypeFilter.value === "현지화" &&
     els.localizationTypeFilter.value === "더빙"
   );
+}
+
+function areDetailFiltersActive() {
+  return !isDubbingDiscussionScope();
 }
 
 function renderTimelineCards(selectedItems) {
@@ -1537,6 +1543,19 @@ function syncLocalizationTypeVisibility() {
   els.localizationTypeFilter.disabled = !show;
 }
 
+function syncDetailFilterVisibility() {
+  const show = areDetailFiltersActive();
+  [
+    [els.courseFormatControl, els.courseFormatFilter],
+    [els.phaseControl, els.phaseFilter],
+  ].forEach(([control, select]) => {
+    control.classList.toggle("is-hidden", !show);
+    control.setAttribute("aria-hidden", String(!show));
+    select.disabled = !show;
+    if (!show) select.blur();
+  });
+}
+
 function groupBy(source, keyGetter) {
   const groups = new Map();
   source.forEach((item) => {
@@ -1555,6 +1574,7 @@ function renderAll() {
   renderLocalizationTypeOptions();
   renderCourseFormatOptions();
   renderFormatOptions();
+  syncDetailFilterVisibility();
   renderList();
   renderManagementTable();
 }
@@ -1574,6 +1594,7 @@ els.siteFilter.addEventListener("change", () => {
   renderLocalizationTypeOptions();
   renderCourseFormatOptions();
   renderFormatOptions();
+  syncDetailFilterVisibility();
   renderList();
   renderManagementTable();
 });
@@ -1582,6 +1603,7 @@ els.languageFilter.addEventListener("change", () => {
   renderLocalizationTypeOptions();
   renderCourseFormatOptions();
   renderFormatOptions();
+  syncDetailFilterVisibility();
   renderList();
   renderManagementTable();
 });
@@ -1589,17 +1611,20 @@ els.courseTypeFilter.addEventListener("change", () => {
   renderLocalizationTypeOptions();
   renderCourseFormatOptions();
   renderFormatOptions();
+  syncDetailFilterVisibility();
   renderList();
   renderManagementTable();
 });
 els.localizationTypeFilter.addEventListener("change", () => {
   renderCourseFormatOptions();
   renderFormatOptions();
+  syncDetailFilterVisibility();
   renderList();
   renderManagementTable();
 });
 els.courseFormatFilter.addEventListener("change", () => {
   renderFormatOptions();
+  syncDetailFilterVisibility();
   renderList();
   renderManagementTable();
 });
