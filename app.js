@@ -369,7 +369,10 @@ function normalizeOverride(override) {
 }
 
 function getItemOverride(item) {
-  if (overrides[item.id]) return overrides[item.id];
+  const directOverride = overrides[item.id] || null;
+  const mirroredOverride = getMirroredOverride(item, directOverride);
+  if (mirroredOverride) return mirroredOverride;
+  if (directOverride) return directOverride;
   if (item.courseFormat !== "에셋") return null;
 
   const legacyId = makeId({
@@ -377,6 +380,36 @@ function getItemOverride(item) {
     courseFormat: "에셋 유형",
   });
   return overrides[legacyId] || null;
+}
+
+function getMirroredOverride(item, directOverride) {
+  if (!shouldMirrorKrRegularCourseToDubbing(item)) return null;
+
+  const regularId = makeId({
+    ...item,
+    localizationType: "정규",
+  });
+  const regularOverride = overrides[regularId] || null;
+  const mirrored = { ...(directOverride || {}) };
+
+  ["size", "fileExtension", "workIncluded", "typeFit"].forEach((field) => {
+    if (regularOverride && Object.prototype.hasOwnProperty.call(regularOverride, field)) {
+      mirrored[field] = regularOverride[field];
+      return;
+    }
+    delete mirrored[field];
+  });
+
+  return mirrored;
+}
+
+function shouldMirrorKrRegularCourseToDubbing(item) {
+  return (
+    item.site === "KR" &&
+    item.courseType === "현지화" &&
+    item.localizationType === "더빙" &&
+    item.courseFormat === "코스"
+  );
 }
 
 function unique(values) {
