@@ -72,6 +72,7 @@ let items = applyOverrides(buildItems(sourceRows));
 let hasUnsavedChanges = false;
 let syncClient = null;
 let syncChannel = null;
+let isFileExtensionColumnMissing = false;
 let isEditAuthorized = false;
 let editPasscode = "";
 let pendingAuthorizedAction = null;
@@ -1033,7 +1034,10 @@ async function initSharedSync() {
     items = applyOverrides(buildItems(sourceRows));
     renderAll();
     setSaveState("clean");
-    setSyncStatus("online", "DB 연동");
+    setSyncStatus(
+      isFileExtensionColumnMissing ? "error" : "online",
+      isFileExtensionColumnMissing ? "DB 컬럼 업데이트 필요" : "DB 연동"
+    );
     subscribeRemoteOverrides();
   } catch (error) {
     console.error(error);
@@ -1051,6 +1055,7 @@ async function fetchRemoteOverrides() {
       throw error;
     }
 
+    isFileExtensionColumnMissing = true;
     const fallback = await syncClient
       .from(dbTableName)
       .select("id,size,memo,work_included,type_fit");
@@ -1058,6 +1063,7 @@ async function fetchRemoteOverrides() {
     return rowsToOverrides(fallback.data || []);
   }
 
+  isFileExtensionColumnMissing = false;
   return rowsToOverrides(data || []);
 }
 
@@ -1103,7 +1109,11 @@ function subscribeRemoteOverrides() {
       handleRemoteOverrideChange
     )
     .subscribe((status) => {
-      if (status === "SUBSCRIBED") setSyncStatus("online", "DB 실시간 연동");
+      if (status !== "SUBSCRIBED") return;
+      setSyncStatus(
+        isFileExtensionColumnMissing ? "error" : "online",
+        isFileExtensionColumnMissing ? "DB 컬럼 업데이트 필요" : "DB 실시간 연동"
+      );
     });
 }
 
@@ -1123,7 +1133,10 @@ function handleRemoteOverrideChange(payload) {
   items = applyOverrides(buildItems(sourceRows));
   renderAll();
   setSaveState("clean");
-  setSyncStatus("online", "DB 동기화됨");
+  setSyncStatus(
+    isFileExtensionColumnMissing ? "error" : "online",
+    isFileExtensionColumnMissing ? "DB 컬럼 업데이트 필요" : "DB 동기화됨"
+  );
 }
 
 async function persistOverrides() {
@@ -1144,7 +1157,10 @@ async function persistOverrides() {
 
   if (!rows.length) {
     setSaveState("saved");
-    setSyncStatus("online", "DB 연동");
+    setSyncStatus(
+      isFileExtensionColumnMissing ? "error" : "online",
+      isFileExtensionColumnMissing ? "DB 컬럼 업데이트 필요" : "DB 연동"
+    );
     return true;
   }
 
@@ -1160,6 +1176,11 @@ async function persistOverrides() {
       openEditAuthModal();
     }
     setSyncStatus("error", "DB 저장 실패");
+    return false;
+  }
+
+  if (isFileExtensionColumnMissing) {
+    setSyncStatus("error", "DB 컬럼 업데이트 필요");
     return false;
   }
 
