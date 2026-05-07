@@ -10,10 +10,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const require = createRequire(import.meta.url);
 
 const rootDir = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
-const outputDir = path.join(rootDir, "outputs", "kr-screenshots");
 const indexUrl = pathToFileURL(path.join(rootDir, "index.html")).href;
 const args = new Set(process.argv.slice(2));
 const useLiveSync = args.has("--live-sync");
+const useAllDubbingCases = args.has("--all-dubbing");
+const useDubbingOnly = args.has("--only-dubbing");
 
 const courseFormats = [
   { label: "코스", slug: "course" },
@@ -26,47 +27,52 @@ const courseFormats = [
   { label: "신규", slug: "new" },
 ];
 
-const cases = [
-  ...courseFormats.map((format) => ({
-    site: "KR",
-    language: "KO",
-    courseType: "오리지널",
-    courseTypeSlug: "original",
-    localizationType: "-",
-    localizationTypeSlug: "",
-    courseFormat: format.label,
-    courseFormatSlug: format.slug,
-  })),
-  ...[
-    { label: "폐강옵션", slug: "closed-option" },
-    { label: "정규", slug: "regular" },
-    { label: "더빙", slug: "dubbing" },
-  ].flatMap((localizationType) =>
-    courseFormats.map((format) => ({
-      site: "KR",
-      language: "KO",
-      courseType: "현지화",
-      courseTypeSlug: "localized",
-      localizationType: localizationType.label,
-      localizationTypeSlug: localizationType.slug,
-      courseFormat: format.label,
-      courseFormatSlug: format.slug,
-    }))
-  ),
+const dubbingRepresentativeFormat = courseFormats[0];
+
+const languageOptions = [
+  { site: "KR", language: "KO", languageSlug: "KO" },
+  { site: "JP", language: "JO", languageSlug: "JO" },
+  { site: "GL", language: "EN", languageSlug: "EN" },
+  { site: "GL", language: "ZH-TW", languageSlug: "ZH-TW" },
+  { site: "GL", language: "TH", languageSlug: "TH" },
 ];
 
-const { chromium } = loadPlaywright();
+const localizationTypes = [
+  { label: "폐강옵션", slug: "closed-option" },
+  { label: "정규", slug: "regular" },
+  { label: "더빙", slug: "dubbing" },
+  { label: "확장", slug: "extension" },
+];
 
-await fs.mkdir(outputDir, { recursive: true });
+const requestedSites = getRequestedSites();
+const { chromium } = loadPlaywright();
 
 const browser = await chromium.launch({
   headless: true,
   ...getBrowserLaunchOptions(),
 });
-const manifest = [];
 
 try {
-  for (const [index, screenshotCase] of cases.entries()) {
+  for (const site of requestedSites) {
+    await captureSite(site);
+  }
+} finally {
+  await browser.close();
+}
+
+async function captureSite(site) {
+  const outputDir = path.join(rootDir, "outputs", `${site.toLowerCase()}-screenshots`);
+  const caseEntries = buildCases(site)
+    .map((screenshotCase, index) => ({
+      number: index + 1,
+      screenshotCase,
+    }))
+    .filter(({ screenshotCase }) => shouldCaptureCase(screenshotCase));
+  const manifest = [];
+
+  await prepareOutputDir(outputDir, caseEntries);
+
+  for (const { number, screenshotCase } of caseEntries) {
     const page = await browser.newPage({
       viewport: { width: 1440, height: 900 },
       deviceScaleFactor: 1,
@@ -82,7 +88,7 @@ try {
     await selectCase(page, screenshotCase);
     await page.evaluate(() => window.scrollTo(0, 0));
 
-    const fileName = makeFileName(index + 1, screenshotCase);
+    const fileName = makeFileName(number, screenshotCase);
     const filePath = path.join(outputDir, fileName);
     await page.screenshot({
       path: filePath,
@@ -91,7 +97,7 @@ try {
     });
 
     manifest.push({
-      number: index + 1,
+      number,
       file: fileName,
       label: makeCaseLabel(screenshotCase),
       selectedScope: await page.locator("#selectedScope").textContent(),
@@ -102,26 +108,81 @@ try {
     await page.close();
     console.log(`Captured ${fileName}`);
   }
-} finally {
-  await browser.close();
+
+  const nextManifest = useDubbingOnly
+    ? await mergeManifest(outputDir, site, manifest)
+    : buildManifest(site, manifest);
+
+  await fs.writeFile(
+    path.join(outputDir, "manifest.json"),
+    `${JSON.stringify(nextManifest, null, 2)}\n`
+  );
+  await fs.writeFile(path.join(outputDir, "index.html"), renderGallery(site, nextManifest.cases));
+
+  console.log(`Done: ${manifest.length} screenshots saved to ${outputDir}`);
 }
 
-await fs.writeFile(
-  path.join(outputDir, "manifest.json"),
-  `${JSON.stringify(
-    {
-      generatedAt: new Date().toISOString(),
-      source: useLiveSync ? "dashboard-with-live-sync" : "dashboard-local-source",
-      caseCount: manifest.length,
-      cases: manifest,
-    },
-    null,
-    2
-  )}\n`
-);
-await fs.writeFile(path.join(outputDir, "index.html"), renderGallery(manifest));
+async function prepareOutputDir(outputDir, caseEntries) {
+  await fs.mkdir(outputDir, { recursive: true });
 
-console.log(`Done: ${manifest.length} screenshots saved to ${outputDir}`);
+  const entries = await fs.readdir(outputDir).catch(() => []);
+  const removableEntries = useDubbingOnly
+    ? new Set(caseEntries.map(({ number, screenshotCase }) => makeFileName(number, screenshotCase)))
+    : new Set(
+        entries.filter(
+          (entry) => entry.endsWith(".png") || entry === "manifest.json" || entry === "index.html"
+        )
+      );
+
+  await Promise.all(
+    entries
+      .filter((entry) => removableEntries.has(entry))
+      .map((entry) => fs.unlink(path.join(outputDir, entry)))
+  );
+}
+
+function shouldCaptureCase(screenshotCase) {
+  if (!useDubbingOnly) return true;
+  return screenshotCase.courseType === "현지화" && screenshotCase.localizationType === "더빙";
+}
+
+function buildManifest(site, cases) {
+  return {
+    generatedAt: new Date().toISOString(),
+    source: useLiveSync ? "dashboard-with-live-sync" : "dashboard-local-source",
+    site,
+    caseCount: cases.length,
+    cases,
+  };
+}
+
+async function mergeManifest(outputDir, site, updatedCases) {
+  const manifestPath = path.join(outputDir, "manifest.json");
+  const currentManifest = await readManifest(manifestPath);
+  const caseByFile = new Map((currentManifest?.cases || []).map((item) => [item.file, item]));
+
+  updatedCases.forEach((item) => {
+    caseByFile.set(item.file, item);
+  });
+
+  const cases = [...caseByFile.values()].sort((a, b) => a.number - b.number);
+  return {
+    ...(currentManifest || {}),
+    generatedAt: new Date().toISOString(),
+    source: useLiveSync ? "dashboard-with-live-sync" : "dashboard-local-source",
+    site,
+    caseCount: cases.length,
+    cases,
+  };
+}
+
+async function readManifest(manifestPath) {
+  try {
+    return JSON.parse(await fs.readFile(manifestPath, "utf8"));
+  } catch {
+    return null;
+  }
+}
 
 function loadPlaywright() {
   const candidates = [
@@ -138,6 +199,90 @@ function loadPlaywright() {
   }
 
   return require("playwright");
+}
+
+function getRequestedSites() {
+  const siteArg = process.argv
+    .slice(2)
+    .find((arg) => arg.startsWith("--site=") || arg.startsWith("--sites="));
+
+  const sites = siteArg
+    ? siteArg
+        .split("=")[1]
+        .split(",")
+        .map((site) => site.trim().toUpperCase())
+        .filter(Boolean)
+    : ["KR"];
+
+  const availableSites = new Set(languageOptions.map((option) => option.site));
+  const invalidSites = sites.filter((site) => !availableSites.has(site));
+  if (invalidSites.length) {
+    throw new Error(`Unsupported site: ${invalidSites.join(", ")}`);
+  }
+
+  return [...new Set(sites)];
+}
+
+function buildCases(site) {
+  return languageOptions
+    .filter((option) => option.site === site)
+    .flatMap((option) => buildLanguageCases(option));
+}
+
+function buildLanguageCases(option) {
+  return [
+    ...buildOriginalCases(option),
+    ...getLocalizationTypes(option).flatMap((localizationType) =>
+      buildLocalizationCases(option, localizationType)
+    ),
+  ];
+}
+
+function buildOriginalCases(option) {
+  if (isGlThaiOriginalDiscussionCase(option)) {
+    return [makeCase(option, "오리지널", null, dubbingRepresentativeFormat)];
+  }
+
+  return courseFormats.map((format) => makeCase(option, "오리지널", null, format));
+}
+
+function buildLocalizationCases(option, localizationType) {
+  if (localizationType.label === "더빙") {
+    const formats = useAllDubbingCases ? courseFormats : [dubbingRepresentativeFormat];
+    return formats.map((format) => makeCase(option, "현지화", localizationType, format));
+  }
+
+  return courseFormats.map((format) => makeCase(option, "현지화", localizationType, format));
+}
+
+function getLocalizationTypes(option) {
+  if (["KR", "JP"].includes(option.site)) {
+    return localizationTypes.filter((type) => type.label !== "확장");
+  }
+
+  if (option.site === "GL" && option.language === "EN") {
+    return localizationTypes.filter((type) => type.label !== "확장");
+  }
+
+  return localizationTypes;
+}
+
+function isGlThaiOriginalDiscussionCase(option) {
+  return option.site === "GL" && option.language === "TH";
+}
+
+function makeCase(option, courseType, localizationType, courseFormat) {
+  return {
+    site: option.site,
+    language: option.language,
+    languageSlug: option.languageSlug,
+    courseType,
+    courseTypeSlug: courseType === "오리지널" ? "original" : "localized",
+    localizationType: localizationType?.label || "-",
+    localizationTypeSlug: localizationType?.slug || "",
+    courseFormat: courseFormat.label,
+    courseFormatSlug: courseFormat.slug,
+  };
 }
 
 function getBrowserLaunchOptions() {
@@ -204,6 +349,11 @@ async function prepareScreenshotPage(page) {
 
 async function selectCase(page, screenshotCase) {
   await selectOption(page, "#siteFilter", screenshotCase.site);
+
+  if (screenshotCase.site === "GL") {
+    await selectOption(page, "#languageFilter", screenshotCase.language);
+  }
+
   await selectOption(page, "#courseTypeFilter", screenshotCase.courseType);
 
   if (screenshotCase.courseType === "현지화") {
@@ -224,13 +374,22 @@ async function selectOption(page, selector, value) {
     { selector, value },
     { timeout: 10000 }
   );
-  await page.selectOption(selector, value);
+  await page.evaluate(
+    ({ selector: innerSelector, value: innerValue }) => {
+      const select = document.querySelector(innerSelector);
+      select.value = innerValue;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    },
+    { selector, value }
+  );
+  await page.waitForTimeout(40);
 }
 
 function makeFileName(number, screenshotCase) {
   const parts = [
     String(number).padStart(2, "0"),
-    "KR",
+    screenshotCase.site,
+    ...(screenshotCase.site === "GL" ? [screenshotCase.languageSlug] : []),
     screenshotCase.courseTypeSlug,
     screenshotCase.localizationTypeSlug,
     screenshotCase.courseFormatSlug,
@@ -242,7 +401,7 @@ function makeFileName(number, screenshotCase) {
 function makeCaseLabel(screenshotCase) {
   return [
     screenshotCase.site,
-    screenshotCase.language,
+    ...(screenshotCase.site === "GL" ? [screenshotCase.language] : []),
     screenshotCase.courseType,
     screenshotCase.courseType === "현지화" ? screenshotCase.localizationType : "",
     screenshotCase.courseFormat,
@@ -251,13 +410,13 @@ function makeCaseLabel(screenshotCase) {
     .join(" / ");
 }
 
-function renderGallery(items) {
+function renderGallery(site, items) {
   return `<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KR 작업 산출물 스크린샷</title>
+    <title>${escapeHtml(site)} 작업 산출물 스크린샷</title>
     <style>
       body {
         background: #f5f6f8;
@@ -349,7 +508,7 @@ function renderGallery(items) {
   <body>
     <main>
       <header>
-        <h1>KR 작업 산출물 스크린샷</h1>
+        <h1>${escapeHtml(site)} 작업 산출물 스크린샷</h1>
         <p>${items.length}개 케이스</p>
       </header>
       <section class="gallery">

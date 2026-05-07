@@ -31,7 +31,7 @@ const courseFormatOptions = [
 const localizationTypeOptions = ["폐강옵션", "정규", "더빙", "확장"];
 
 const guideLinks = [
-  { label: "통합", url: "" },
+  { label: "공통화 분석", url: "./comparison-dashboard.html" },
   { label: "KR", url: "" },
   { label: "JP", url: "" },
   { label: "GL", url: "" },

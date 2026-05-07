@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>콜로소 마케팅 업무 통합 분석</title>
+    <link rel="stylesheet" href="./comparison-dashboard.css?v=20260507-task-matrix" />
+  </head>
+  <body>
+    <main class="analysis-shell">
+      <header class="analysis-topbar">
+        <div>
+          <p class="eyebrow">Workload Reduction Analysis</p>
+          <h1>국가별 마케팅 업무 공통화 분석</h1>
+        </div>
+        <div class="top-actions">
+          <span class="sync-status is-local" id="syncStatus">로컬 기준</span>
+          <a class="ghost-button" href="./index.html">관리 대시보드</a>
+        </div>
+      </header>
+
+      <section class="filter-band" aria-label="분석 조건" hidden>
+        <div class="control-group">
+          <label for="courseTypeFilter">코스 유형</label>
+          <select id="courseTypeFilter"></select>
+        </div>
+        <div class="control-group">
+          <label for="localizationTypeFilter">현지화 유형</label>
+          <select id="localizationTypeFilter"></select>
+        </div>
+        <div class="control-group">
+          <label for="courseFormatFilter">코스 포맷</label>
+          <select id="courseFormatFilter"></select>
+        </div>
+        <div class="control-group">
+          <label for="statusFilter">통합 판단</label>
+          <select id="statusFilter"></select>
+        </div>
+      </section>
+
+      <section class="summary-grid" id="summaryGrid" aria-label="요약 수치"></section>
+
+      <section class="analysis-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Overall Snapshot</p>
+            <h2>전체 업무 항목과 상이 케이스 요약</h2>
+          </div>
+          <span class="count-pill" id="overviewCount">0개</span>
+        </div>
+        <div class="overview-body">
+          <div class="overview-grid">
+            <article class="overview-panel is-wide">
+              <header>
+                <h3>우리가 하는 업무 전체</h3>
+                <span id="allTaskCount">0개</span>
+              </header>
+              <div class="table-wrap compact">
+                <table class="task-overview-table">
+                  <thead id="allTaskTableHead"></thead>
+                  <tbody id="allTaskTableBody"></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="overview-panel">
+              <header>
+                <h3>국가 공통 업무</h3>
+                <span id="commonTaskCount">0개</span>
+              </header>
+              <div class="task-stat-list" id="commonTaskList"></div>
+            </article>
+            <article class="overview-panel">
+              <header>
+                <h3>과부하 유발 반복 차이 업무</h3>
+                <span id="differentTaskCount">0개</span>
+              </header>
+              <div class="task-stat-list" id="differentTaskList"></div>
+            </article>
+            <article class="overview-panel">
+              <header>
+                <h3>운영 예외/언어별 차이</h3>
+                <span id="exceptionCount">0개</span>
+              </header>
+              <div class="task-stat-list" id="exceptionList"></div>
+            </article>
+          </div>
+          <div class="pattern-panel" hidden>
+            <header>
+              <h3>공통화 판단표</h3>
+              <span>유형 × 포맷별 통합 가능성</span>
+            </header>
+            <div class="table-wrap compact">
+              <table class="pattern-table">
+                <thead id="patternTableHead"></thead>
+                <tbody id="patternTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="pattern-panel" hidden>
+            <header>
+              <h3>국가 × 포맷 차이 수</h3>
+              <span>국가별로 다르게 대응 중이거나 확인이 필요한 케이스</span>
+            </header>
+            <div class="table-wrap compact">
+              <table class="country-format-table">
+                <thead id="countryFormatTableHead"></thead>
+                <tbody id="countryFormatTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="decision-grid" aria-label="통합 후보">
+        <article class="decision-panel">
+          <header>
+            <h2>이미 동일 운영</h2>
+            <span id="readyCount">0개</span>
+          </header>
+          <div class="decision-list" id="readyList"></div>
+        </article>
+        <article class="decision-panel">
+          <header>
+            <h2>기준만 맞추면 통합</h2>
+            <span id="attributeCount">0개</span>
+          </header>
+          <div class="decision-list" id="attributeList"></div>
+        </article>
+        <article class="decision-panel">
+          <header>
+            <h2>조정/확인 필요</h2>
+            <span id="differentCount">0개</span>
+          </header>
+          <div class="decision-list" id="differentList"></div>
+        </article>
+      </section>
+
+      <section class="analysis-section" id="detailSection">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Selected Case</p>
+            <h2 id="detailTitle">케이스 상세</h2>
+          </div>
+          <span class="count-pill" id="detailStatus">-</span>
+        </div>
+        <div class="detail-body" id="detailBody"></div>
+      </section>
+
+      <section class="analysis-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Alignment Detail</p>
+            <h2>공통화 안별 상세</h2>
+          </div>
+          <span class="count-pill" id="caseCount">0개</span>
+        </div>
+        <div class="table-wrap">
+          <table class="case-table">
+            <thead>
+              <tr>
+                <th>판단</th>
+                <th>케이스</th>
+                <th>비교 대상</th>
+                <th>업무 수</th>
+                <th>업무 차이</th>
+                <th>작업주체 차이</th>
+                <th>KR</th>
+                <th>JP</th>
+                <th>GL EN</th>
+                <th>GL ZH-TW</th>
+                <th>GL TH</th>
+                <th>주요 차이</th>
+              </tr>
+            </thead>
+            <tbody id="caseTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="./config.js?v=20260507-hide-dubbing-filters"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./comparison-dashboard.js?v=20260507-task-matrix"></script>
+  </body>
+</html>
