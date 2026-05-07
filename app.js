@@ -585,7 +585,6 @@ function isNo(value) {
 }
 
 function renderList() {
-  const selectedItems = getSelectedItems();
   const scopeParts = [
     els.siteFilter.value,
     ...(isLanguageFilterActive() ? [els.languageFilter.value] : []),
@@ -595,6 +594,19 @@ function renderList() {
     els.phaseFilter.value,
   ];
   els.selectedScope.textContent = scopeParts.join(" · ");
+
+  if (isKrDubbingDiscussionScope()) {
+    els.taskCount.textContent = "논의 필요";
+    els.taskList.innerHTML = `
+      <div class="discussion-state">
+        <strong>추후 논의 필요</strong>
+        <span>KR 현지화 더빙 업무 항목은 추후 확정 후 업데이트됩니다.</span>
+      </div>
+    `;
+    return;
+  }
+
+  const selectedItems = getSelectedItems();
   els.taskCount.textContent = `${selectedItems.length}개`;
 
   if (!selectedItems.length) {
@@ -603,6 +615,14 @@ function renderList() {
   }
 
   els.taskList.innerHTML = renderTimelineCards(selectedItems);
+}
+
+function isKrDubbingDiscussionScope() {
+  return (
+    els.siteFilter.value === "KR" &&
+    els.courseTypeFilter.value === "현지화" &&
+    els.localizationTypeFilter.value === "더빙"
+  );
 }
 
 function renderTimelineCards(selectedItems) {

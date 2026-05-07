@@ -573,6 +573,30 @@ h2 {
   text-align: center;
 }
 
+.discussion-state {
+  align-items: center;
+  background: #f8fafb;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  min-height: 180px;
+  padding: 42px 24px;
+  text-align: center;
+}
+
+.discussion-state strong {
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.discussion-state span {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .timeline-dashboard {
   display: grid;
   gap: 14px;
