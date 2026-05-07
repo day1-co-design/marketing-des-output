@@ -642,6 +642,11 @@ h2 {
   padding: 6px 8px;
 }
 
+.timeline-variant-list.is-owner span {
+  background: #fff3dc;
+  color: #8c5d13;
+}
+
 .timeline-phase-header span {
   background: rgba(255, 255, 255, 0.72);
   color: var(--timeline-phase-ink);

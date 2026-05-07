@@ -73,7 +73,7 @@ headerMap.set("작업 주체", "workOwner");
 const overrideStorageKey = "colosoDesignOutputChecks";
 const dbTableName = "marketing_output_overrides";
 const editableTextFields = ["size", "fileExtension", "requestOwner", "workOwner", "memo"];
-const ownerOptions = ["", "기획", "마케팅", "현지화", "디자인"];
+const ownerOptions = ["", "기획", "마케터", "현지화", "디자인"];
 const remoteOverrideColumns =
   "id,size,file_extension,request_owner,work_owner,memo,work_included,type_fit";
 const remoteOverrideFallbackColumns = "id,size,file_extension,memo,work_included,type_fit";
@@ -174,6 +174,9 @@ function buildItems(rows) {
 function isAvailableForCourseFormat(item, courseFormat) {
   if (item.group === "온사이트" && item.output === "포맷 전용 페이지") {
     return courseFormat === "시그니처";
+  }
+  if (item.phase === "영상공개" && item.group === "페이드" && item.output === "광고") {
+    return false;
   }
   return true;
 }
@@ -313,7 +316,7 @@ function withDefaults(item) {
     id: makeId(item),
     fileExtension: item.fileExtension || getFileExtension(item),
     requestOwner: item.requestOwner || "",
-    workOwner: item.workOwner || "",
+    workOwner: item.workOwner || getDefaultWorkOwner(item),
     memo: item.memo || "",
     workIncluded: item.workIncluded || getDefaultWorkIncluded(item),
     typeFit: item.typeFit || "O",
@@ -325,6 +328,13 @@ function getDefaultWorkIncluded(item) {
     return item.phase === "얼리버드" ? "O" : "X";
   }
   return "O";
+}
+
+function getDefaultWorkOwner(item) {
+  if (item.site === "KR" && item.group === "페이드" && item.output === "광고") {
+    return "마케터";
+  }
+  return "";
 }
 
 function getFileExtension(item) {
@@ -367,9 +377,13 @@ function loadOverrides() {
 function applyOverrides(baseItems) {
   return baseItems.map((item) => {
     const override = normalizeOverride(getItemOverride(item) || {});
-    return {
+    const merged = {
       ...item,
       ...override,
+    };
+    return {
+      ...merged,
+      workOwner: merged.workOwner || getDefaultWorkOwner(merged),
     };
   });
 }
@@ -711,6 +725,7 @@ function buildTimelineOutputRows(source) {
         output: item.output,
         variants: [],
         extensions: [],
+        workOwners: [],
       });
     }
 
@@ -722,9 +737,17 @@ function buildTimelineOutputRows(source) {
     getExtensionTags(item.fileExtension).forEach((extension) => {
       if (!row.extensions.includes(extension)) row.extensions.push(extension);
     });
+
+    if (shouldShowWorkOwner(item.workOwner) && !row.workOwners.includes(item.workOwner)) {
+      row.workOwners.push(item.workOwner);
+    }
   });
 
   return [...rows.values()];
+}
+
+function shouldShowWorkOwner(workOwner) {
+  return workOwner === "마케터";
 }
 
 function getExtensionTags(fileExtension) {
@@ -752,6 +775,7 @@ function renderTimelineOutput(row) {
     <article class="timeline-output-row">
       <div class="timeline-output-main">
         <strong>${escapeHtml(row.output)}</strong>
+        ${row.workOwners.length ? renderTimelineTags(row.workOwners, "is-owner") : ""}
         ${row.variants.length ? renderTimelineTags(row.variants) : ""}
       </div>
       ${row.extensions.length ? renderTimelineExtension(row.extensions) : ""}
@@ -763,9 +787,9 @@ function renderTimelineExtension(extensions) {
   return `<span class="timeline-extension-note">확장자 : ${escapeHtml(extensions.join(", "))}</span>`;
 }
 
-function renderTimelineTags(tags) {
+function renderTimelineTags(tags, className = "") {
   return `
-    <div class="timeline-variant-list">
+    <div class="timeline-variant-list ${escapeHtml(className)}">
       ${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
     </div>
   `;
