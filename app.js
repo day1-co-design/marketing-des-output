@@ -338,15 +338,7 @@ function getDefaultWorkOwner(item) {
 }
 
 function getFileExtension(item) {
-  const group = String(item.group || "").trim();
-  const output = String(item.output || "").trim().toUpperCase();
-
-  if (output === "EDM") return "jpg";
-  if (output === "광고" || group === "페이드" || group === "광고") return "png 또는 mp4";
-  if (group === "오가닉" || group === "얼리버드 오가닉") {
-    return output === "트레일러 썸네일" ? "jpg" : "png";
-  }
-  return "-";
+  return "";
 }
 
 function makeId(item) {
