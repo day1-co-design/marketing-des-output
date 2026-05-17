@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-07T11:45:43.805Z",
+  "generatedAt": "2026-05-13T04:09:57.878Z",
   "source": "dashboard-with-live-sync",
   "site": "GL",
   "caseCount": 105,
@@ -9,7 +9,7 @@
       "file": "01_GL_EN_original_course.png",
       "label": "GL / EN / 오리지널 / 코스",
       "selectedScope": "GL · EN · 오리지널 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -17,15 +17,15 @@
       "file": "02_GL_EN_original_signature.png",
       "label": "GL / EN / 오리지널 / 시그니처",
       "selectedScope": "GL · EN · 오리지널 · 시그니처 · 전체",
-      "taskCount": "17개",
-      "syncStatus": "DB 실시간 연동"
+      "taskCount": "15개",
+      "syncStatus": "DB 연동"
     },
     {
       "number": 3,
       "file": "03_GL_EN_original_dictionary.png",
       "label": "GL / EN / 오리지널 / 딕셔너리",
       "selectedScope": "GL · EN · 오리지널 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -33,15 +33,15 @@
       "file": "04_GL_EN_original_asset.png",
       "label": "GL / EN / 오리지널 / 에셋",
       "selectedScope": "GL · EN · 오리지널 · 에셋 · 전체",
-      "taskCount": "15개",
-      "syncStatus": "DB 실시간 연동"
+      "taskCount": "13개",
+      "syncStatus": "DB 연동"
     },
     {
       "number": 5,
       "file": "05_GL_EN_original_class.png",
       "label": "GL / EN / 오리지널 / 클래스",
       "selectedScope": "GL · EN · 오리지널 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -49,7 +49,7 @@
       "file": "06_GL_EN_original_class-plus.png",
       "label": "GL / EN / 오리지널 / 클래스 +",
       "selectedScope": "GL · EN · 오리지널 · 클래스 + · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -57,7 +57,7 @@
       "file": "07_GL_EN_original_project.png",
       "label": "GL / EN / 오리지널 / 프로젝트",
       "selectedScope": "GL · EN · 오리지널 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -65,7 +65,7 @@
       "file": "08_GL_EN_original_new.png",
       "label": "GL / EN / 오리지널 / 신규",
       "selectedScope": "GL · EN · 오리지널 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -73,7 +73,7 @@
       "file": "09_GL_EN_localized_closed-option_course.png",
       "label": "GL / EN / 현지화 / 폐강옵션 / 코스",
       "selectedScope": "GL · EN · 현지화 · 폐강옵션 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -81,7 +81,7 @@
       "file": "10_GL_EN_localized_closed-option_signature.png",
       "label": "GL / EN / 현지화 / 폐강옵션 / 시그니처",
       "selectedScope": "GL · EN · 현지화 · 폐강옵션 · 시그니처 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -89,7 +89,7 @@
       "file": "11_GL_EN_localized_closed-option_dictionary.png",
       "label": "GL / EN / 현지화 / 폐강옵션 / 딕셔너리",
       "selectedScope": "GL · EN · 현지화 · 폐강옵션 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -97,7 +97,7 @@
       "file": "12_GL_EN_localized_closed-option_asset.png",
       "label": "GL / EN / 현지화 / 폐강옵션 / 에셋",
       "selectedScope": "GL · EN · 현지화 · 폐강옵션 · 에셋 · 전체",
-      "taskCount": "15개",
+      "taskCount": "11개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -105,7 +105,7 @@
       "file": "13_GL_EN_localized_closed-option_class.png",
       "label": "GL / EN / 현지화 / 폐강옵션 / 클래스",
       "selectedScope": "GL · EN · 현지화 · 폐강옵션 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -113,7 +113,7 @@
       "file": "14_GL_EN_localized_closed-option_class-plus.png",
       "label": "GL / EN / 현지화 / 폐강옵션 / 클래스 +",
       "selectedScope": "GL · EN · 현지화 · 폐강옵션 · 클래스 + · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -121,7 +121,7 @@
       "file": "15_GL_EN_localized_closed-option_project.png",
       "label": "GL / EN / 현지화 / 폐강옵션 / 프로젝트",
       "selectedScope": "GL · EN · 현지화 · 폐강옵션 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -129,7 +129,7 @@
       "file": "16_GL_EN_localized_closed-option_new.png",
       "label": "GL / EN / 현지화 / 폐강옵션 / 신규",
       "selectedScope": "GL · EN · 현지화 · 폐강옵션 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -137,7 +137,7 @@
       "file": "17_GL_EN_localized_regular_course.png",
       "label": "GL / EN / 현지화 / 정규 / 코스",
       "selectedScope": "GL · EN · 현지화 · 정규 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -145,7 +145,7 @@
       "file": "18_GL_EN_localized_regular_signature.png",
       "label": "GL / EN / 현지화 / 정규 / 시그니처",
       "selectedScope": "GL · EN · 현지화 · 정규 · 시그니처 · 전체",
-      "taskCount": "17개",
+      "taskCount": "14개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -153,7 +153,7 @@
       "file": "19_GL_EN_localized_regular_dictionary.png",
       "label": "GL / EN / 현지화 / 정규 / 딕셔너리",
       "selectedScope": "GL · EN · 현지화 · 정규 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -161,7 +161,7 @@
       "file": "20_GL_EN_localized_regular_asset.png",
       "label": "GL / EN / 현지화 / 정규 / 에셋",
       "selectedScope": "GL · EN · 현지화 · 정규 · 에셋 · 전체",
-      "taskCount": "15개",
+      "taskCount": "11개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -169,7 +169,7 @@
       "file": "21_GL_EN_localized_regular_class.png",
       "label": "GL / EN / 현지화 / 정규 / 클래스",
       "selectedScope": "GL · EN · 현지화 · 정규 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -177,7 +177,7 @@
       "file": "22_GL_EN_localized_regular_class-plus.png",
       "label": "GL / EN / 현지화 / 정규 / 클래스 +",
       "selectedScope": "GL · EN · 현지화 · 정규 · 클래스 + · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -185,7 +185,7 @@
       "file": "23_GL_EN_localized_regular_project.png",
       "label": "GL / EN / 현지화 / 정규 / 프로젝트",
       "selectedScope": "GL · EN · 현지화 · 정규 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -193,7 +193,7 @@
       "file": "24_GL_EN_localized_regular_new.png",
       "label": "GL / EN / 현지화 / 정규 / 신규",
       "selectedScope": "GL · EN · 현지화 · 정규 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -201,7 +201,7 @@
       "file": "25_GL_EN_localized_dubbing_course.png",
       "label": "GL / EN / 현지화 / 더빙 / 코스",
       "selectedScope": "GL · EN · 현지화 · 더빙 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -209,7 +209,7 @@
       "file": "26_GL_EN_localized_dubbing_signature.png",
       "label": "GL / EN / 현지화 / 더빙 / 시그니처",
       "selectedScope": "GL · EN · 현지화 · 더빙 · 시그니처 · 전체",
-      "taskCount": "17개",
+      "taskCount": "14개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -217,7 +217,7 @@
       "file": "27_GL_EN_localized_dubbing_dictionary.png",
       "label": "GL / EN / 현지화 / 더빙 / 딕셔너리",
       "selectedScope": "GL · EN · 현지화 · 더빙 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -225,7 +225,7 @@
       "file": "28_GL_EN_localized_dubbing_asset.png",
       "label": "GL / EN / 현지화 / 더빙 / 에셋",
       "selectedScope": "GL · EN · 현지화 · 더빙 · 에셋 · 전체",
-      "taskCount": "15개",
+      "taskCount": "11개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -233,7 +233,7 @@
       "file": "29_GL_EN_localized_dubbing_class.png",
       "label": "GL / EN / 현지화 / 더빙 / 클래스",
       "selectedScope": "GL · EN · 현지화 · 더빙 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -241,7 +241,7 @@
       "file": "30_GL_EN_localized_dubbing_class-plus.png",
       "label": "GL / EN / 현지화 / 더빙 / 클래스 +",
       "selectedScope": "GL · EN · 현지화 · 더빙 · 클래스 + · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -249,7 +249,7 @@
       "file": "31_GL_EN_localized_dubbing_project.png",
       "label": "GL / EN / 현지화 / 더빙 / 프로젝트",
       "selectedScope": "GL · EN · 현지화 · 더빙 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -257,7 +257,7 @@
       "file": "32_GL_EN_localized_dubbing_new.png",
       "label": "GL / EN / 현지화 / 더빙 / 신규",
       "selectedScope": "GL · EN · 현지화 · 더빙 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -265,7 +265,7 @@
       "file": "33_GL_ZH-TW_original_course.png",
       "label": "GL / ZH-TW / 오리지널 / 코스",
       "selectedScope": "GL · ZH-TW · 오리지널 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -273,7 +273,7 @@
       "file": "34_GL_ZH-TW_original_signature.png",
       "label": "GL / ZH-TW / 오리지널 / 시그니처",
       "selectedScope": "GL · ZH-TW · 오리지널 · 시그니처 · 전체",
-      "taskCount": "17개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -281,7 +281,7 @@
       "file": "35_GL_ZH-TW_original_dictionary.png",
       "label": "GL / ZH-TW / 오리지널 / 딕셔너리",
       "selectedScope": "GL · ZH-TW · 오리지널 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -289,7 +289,7 @@
       "file": "36_GL_ZH-TW_original_asset.png",
       "label": "GL / ZH-TW / 오리지널 / 에셋",
       "selectedScope": "GL · ZH-TW · 오리지널 · 에셋 · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -297,7 +297,7 @@
       "file": "37_GL_ZH-TW_original_class.png",
       "label": "GL / ZH-TW / 오리지널 / 클래스",
       "selectedScope": "GL · ZH-TW · 오리지널 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -305,7 +305,7 @@
       "file": "38_GL_ZH-TW_original_class-plus.png",
       "label": "GL / ZH-TW / 오리지널 / 클래스 +",
       "selectedScope": "GL · ZH-TW · 오리지널 · 클래스 + · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -313,7 +313,7 @@
       "file": "39_GL_ZH-TW_original_project.png",
       "label": "GL / ZH-TW / 오리지널 / 프로젝트",
       "selectedScope": "GL · ZH-TW · 오리지널 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -321,7 +321,7 @@
       "file": "40_GL_ZH-TW_original_new.png",
       "label": "GL / ZH-TW / 오리지널 / 신규",
       "selectedScope": "GL · ZH-TW · 오리지널 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "13개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -329,7 +329,7 @@
       "file": "41_GL_ZH-TW_localized_closed-option_course.png",
       "label": "GL / ZH-TW / 현지화 / 폐강옵션 / 코스",
       "selectedScope": "GL · ZH-TW · 현지화 · 폐강옵션 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -337,7 +337,7 @@
       "file": "42_GL_ZH-TW_localized_closed-option_signature.png",
       "label": "GL / ZH-TW / 현지화 / 폐강옵션 / 시그니처",
       "selectedScope": "GL · ZH-TW · 현지화 · 폐강옵션 · 시그니처 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -345,7 +345,7 @@
       "file": "43_GL_ZH-TW_localized_closed-option_dictionary.png",
       "label": "GL / ZH-TW / 현지화 / 폐강옵션 / 딕셔너리",
       "selectedScope": "GL · ZH-TW · 현지화 · 폐강옵션 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -353,7 +353,7 @@
       "file": "44_GL_ZH-TW_localized_closed-option_asset.png",
       "label": "GL / ZH-TW / 현지화 / 폐강옵션 / 에셋",
       "selectedScope": "GL · ZH-TW · 현지화 · 폐강옵션 · 에셋 · 전체",
-      "taskCount": "15개",
+      "taskCount": "11개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -361,7 +361,7 @@
       "file": "45_GL_ZH-TW_localized_closed-option_class.png",
       "label": "GL / ZH-TW / 현지화 / 폐강옵션 / 클래스",
       "selectedScope": "GL · ZH-TW · 현지화 · 폐강옵션 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -369,7 +369,7 @@
       "file": "46_GL_ZH-TW_localized_closed-option_class-plus.png",
       "label": "GL / ZH-TW / 현지화 / 폐강옵션 / 클래스 +",
       "selectedScope": "GL · ZH-TW · 현지화 · 폐강옵션 · 클래스 + · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -377,7 +377,7 @@
       "file": "47_GL_ZH-TW_localized_closed-option_project.png",
       "label": "GL / ZH-TW / 현지화 / 폐강옵션 / 프로젝트",
       "selectedScope": "GL · ZH-TW · 현지화 · 폐강옵션 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -385,7 +385,7 @@
       "file": "48_GL_ZH-TW_localized_closed-option_new.png",
       "label": "GL / ZH-TW / 현지화 / 폐강옵션 / 신규",
       "selectedScope": "GL · ZH-TW · 현지화 · 폐강옵션 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -393,7 +393,7 @@
       "file": "49_GL_ZH-TW_localized_regular_course.png",
       "label": "GL / ZH-TW / 현지화 / 정규 / 코스",
       "selectedScope": "GL · ZH-TW · 현지화 · 정규 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -401,7 +401,7 @@
       "file": "50_GL_ZH-TW_localized_regular_signature.png",
       "label": "GL / ZH-TW / 현지화 / 정규 / 시그니처",
       "selectedScope": "GL · ZH-TW · 현지화 · 정규 · 시그니처 · 전체",
-      "taskCount": "17개",
+      "taskCount": "14개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -409,7 +409,7 @@
       "file": "51_GL_ZH-TW_localized_regular_dictionary.png",
       "label": "GL / ZH-TW / 현지화 / 정규 / 딕셔너리",
       "selectedScope": "GL · ZH-TW · 현지화 · 정규 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -417,7 +417,7 @@
       "file": "52_GL_ZH-TW_localized_regular_asset.png",
       "label": "GL / ZH-TW / 현지화 / 정규 / 에셋",
       "selectedScope": "GL · ZH-TW · 현지화 · 정규 · 에셋 · 전체",
-      "taskCount": "15개",
+      "taskCount": "11개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -425,7 +425,7 @@
       "file": "53_GL_ZH-TW_localized_regular_class.png",
       "label": "GL / ZH-TW / 현지화 / 정규 / 클래스",
       "selectedScope": "GL · ZH-TW · 현지화 · 정규 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -433,7 +433,7 @@
       "file": "54_GL_ZH-TW_localized_regular_class-plus.png",
       "label": "GL / ZH-TW / 현지화 / 정규 / 클래스 +",
       "selectedScope": "GL · ZH-TW · 현지화 · 정규 · 클래스 + · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -441,7 +441,7 @@
       "file": "55_GL_ZH-TW_localized_regular_project.png",
       "label": "GL / ZH-TW / 현지화 / 정규 / 프로젝트",
       "selectedScope": "GL · ZH-TW · 현지화 · 정규 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -449,7 +449,7 @@
       "file": "56_GL_ZH-TW_localized_regular_new.png",
       "label": "GL / ZH-TW / 현지화 / 정규 / 신규",
       "selectedScope": "GL · ZH-TW · 현지화 · 정규 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -457,7 +457,7 @@
       "file": "57_GL_ZH-TW_localized_dubbing_course.png",
       "label": "GL / ZH-TW / 현지화 / 더빙 / 코스",
       "selectedScope": "GL · ZH-TW · 현지화 · 더빙 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -465,15 +465,15 @@
       "file": "58_GL_ZH-TW_localized_dubbing_signature.png",
       "label": "GL / ZH-TW / 현지화 / 더빙 / 시그니처",
       "selectedScope": "GL · ZH-TW · 현지화 · 더빙 · 시그니처 · 전체",
-      "taskCount": "17개",
-      "syncStatus": "DB 연동"
+      "taskCount": "14개",
+      "syncStatus": "DB 실시간 연동"
     },
     {
       "number": 59,
       "file": "59_GL_ZH-TW_localized_dubbing_dictionary.png",
       "label": "GL / ZH-TW / 현지화 / 더빙 / 딕셔너리",
       "selectedScope": "GL · ZH-TW · 현지화 · 더빙 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -481,7 +481,7 @@
       "file": "60_GL_ZH-TW_localized_dubbing_asset.png",
       "label": "GL / ZH-TW / 현지화 / 더빙 / 에셋",
       "selectedScope": "GL · ZH-TW · 현지화 · 더빙 · 에셋 · 전체",
-      "taskCount": "15개",
+      "taskCount": "11개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -489,7 +489,7 @@
       "file": "61_GL_ZH-TW_localized_dubbing_class.png",
       "label": "GL / ZH-TW / 현지화 / 더빙 / 클래스",
       "selectedScope": "GL · ZH-TW · 현지화 · 더빙 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -497,7 +497,7 @@
       "file": "62_GL_ZH-TW_localized_dubbing_class-plus.png",
       "label": "GL / ZH-TW / 현지화 / 더빙 / 클래스 +",
       "selectedScope": "GL · ZH-TW · 현지화 · 더빙 · 클래스 + · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -505,7 +505,7 @@
       "file": "63_GL_ZH-TW_localized_dubbing_project.png",
       "label": "GL / ZH-TW / 현지화 / 더빙 / 프로젝트",
       "selectedScope": "GL · ZH-TW · 현지화 · 더빙 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -513,7 +513,7 @@
       "file": "64_GL_ZH-TW_localized_dubbing_new.png",
       "label": "GL / ZH-TW / 현지화 / 더빙 / 신규",
       "selectedScope": "GL · ZH-TW · 현지화 · 더빙 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -521,7 +521,7 @@
       "file": "65_GL_ZH-TW_localized_extension_course.png",
       "label": "GL / ZH-TW / 현지화 / 확장 / 코스",
       "selectedScope": "GL · ZH-TW · 현지화 · 확장 · 코스 · 전체",
-      "taskCount": "5개",
+      "taskCount": "7개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -529,7 +529,7 @@
       "file": "66_GL_ZH-TW_localized_extension_signature.png",
       "label": "GL / ZH-TW / 현지화 / 확장 / 시그니처",
       "selectedScope": "GL · ZH-TW · 현지화 · 확장 · 시그니처 · 전체",
-      "taskCount": "5개",
+      "taskCount": "7개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -537,7 +537,7 @@
       "file": "67_GL_ZH-TW_localized_extension_dictionary.png",
       "label": "GL / ZH-TW / 현지화 / 확장 / 딕셔너리",
       "selectedScope": "GL · ZH-TW · 현지화 · 확장 · 딕셔너리 · 전체",
-      "taskCount": "5개",
+      "taskCount": "7개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -545,7 +545,7 @@
       "file": "68_GL_ZH-TW_localized_extension_asset.png",
       "label": "GL / ZH-TW / 현지화 / 확장 / 에셋",
       "selectedScope": "GL · ZH-TW · 현지화 · 확장 · 에셋 · 전체",
-      "taskCount": "5개",
+      "taskCount": "7개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -553,7 +553,7 @@
       "file": "69_GL_ZH-TW_localized_extension_class.png",
       "label": "GL / ZH-TW / 현지화 / 확장 / 클래스",
       "selectedScope": "GL · ZH-TW · 현지화 · 확장 · 클래스 · 전체",
-      "taskCount": "5개",
+      "taskCount": "7개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -561,7 +561,7 @@
       "file": "70_GL_ZH-TW_localized_extension_class-plus.png",
       "label": "GL / ZH-TW / 현지화 / 확장 / 클래스 +",
       "selectedScope": "GL · ZH-TW · 현지화 · 확장 · 클래스 + · 전체",
-      "taskCount": "5개",
+      "taskCount": "7개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -569,7 +569,7 @@
       "file": "71_GL_ZH-TW_localized_extension_project.png",
       "label": "GL / ZH-TW / 현지화 / 확장 / 프로젝트",
       "selectedScope": "GL · ZH-TW · 현지화 · 확장 · 프로젝트 · 전체",
-      "taskCount": "5개",
+      "taskCount": "7개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -577,7 +577,7 @@
       "file": "72_GL_ZH-TW_localized_extension_new.png",
       "label": "GL / ZH-TW / 현지화 / 확장 / 신규",
       "selectedScope": "GL · ZH-TW · 현지화 · 확장 · 신규 · 전체",
-      "taskCount": "5개",
+      "taskCount": "7개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -593,7 +593,7 @@
       "file": "74_GL_TH_localized_closed-option_course.png",
       "label": "GL / TH / 현지화 / 폐강옵션 / 코스",
       "selectedScope": "GL · TH · 현지화 · 폐강옵션 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -601,7 +601,7 @@
       "file": "75_GL_TH_localized_closed-option_signature.png",
       "label": "GL / TH / 현지화 / 폐강옵션 / 시그니처",
       "selectedScope": "GL · TH · 현지화 · 폐강옵션 · 시그니처 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -609,7 +609,7 @@
       "file": "76_GL_TH_localized_closed-option_dictionary.png",
       "label": "GL / TH / 현지화 / 폐강옵션 / 딕셔너리",
       "selectedScope": "GL · TH · 현지화 · 폐강옵션 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -617,7 +617,7 @@
       "file": "77_GL_TH_localized_closed-option_asset.png",
       "label": "GL / TH / 현지화 / 폐강옵션 / 에셋",
       "selectedScope": "GL · TH · 현지화 · 폐강옵션 · 에셋 · 전체",
-      "taskCount": "15개",
+      "taskCount": "9개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -625,7 +625,7 @@
       "file": "78_GL_TH_localized_closed-option_class.png",
       "label": "GL / TH / 현지화 / 폐강옵션 / 클래스",
       "selectedScope": "GL · TH · 현지화 · 폐강옵션 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -633,7 +633,7 @@
       "file": "79_GL_TH_localized_closed-option_class-plus.png",
       "label": "GL / TH / 현지화 / 폐강옵션 / 클래스 +",
       "selectedScope": "GL · TH · 현지화 · 폐강옵션 · 클래스 + · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -641,7 +641,7 @@
       "file": "80_GL_TH_localized_closed-option_project.png",
       "label": "GL / TH / 현지화 / 폐강옵션 / 프로젝트",
       "selectedScope": "GL · TH · 현지화 · 폐강옵션 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -649,7 +649,7 @@
       "file": "81_GL_TH_localized_closed-option_new.png",
       "label": "GL / TH / 현지화 / 폐강옵션 / 신규",
       "selectedScope": "GL · TH · 현지화 · 폐강옵션 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -657,7 +657,7 @@
       "file": "82_GL_TH_localized_regular_course.png",
       "label": "GL / TH / 현지화 / 정규 / 코스",
       "selectedScope": "GL · TH · 현지화 · 정규 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -665,7 +665,7 @@
       "file": "83_GL_TH_localized_regular_signature.png",
       "label": "GL / TH / 현지화 / 정규 / 시그니처",
       "selectedScope": "GL · TH · 현지화 · 정규 · 시그니처 · 전체",
-      "taskCount": "17개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -673,7 +673,7 @@
       "file": "84_GL_TH_localized_regular_dictionary.png",
       "label": "GL / TH / 현지화 / 정규 / 딕셔너리",
       "selectedScope": "GL · TH · 현지화 · 정규 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -681,7 +681,7 @@
       "file": "85_GL_TH_localized_regular_asset.png",
       "label": "GL / TH / 현지화 / 정규 / 에셋",
       "selectedScope": "GL · TH · 현지화 · 정규 · 에셋 · 전체",
-      "taskCount": "15개",
+      "taskCount": "9개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -689,7 +689,7 @@
       "file": "86_GL_TH_localized_regular_class.png",
       "label": "GL / TH / 현지화 / 정규 / 클래스",
       "selectedScope": "GL · TH · 현지화 · 정규 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -697,7 +697,7 @@
       "file": "87_GL_TH_localized_regular_class-plus.png",
       "label": "GL / TH / 현지화 / 정규 / 클래스 +",
       "selectedScope": "GL · TH · 현지화 · 정규 · 클래스 + · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -705,7 +705,7 @@
       "file": "88_GL_TH_localized_regular_project.png",
       "label": "GL / TH / 현지화 / 정규 / 프로젝트",
       "selectedScope": "GL · TH · 현지화 · 정규 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -713,7 +713,7 @@
       "file": "89_GL_TH_localized_regular_new.png",
       "label": "GL / TH / 현지화 / 정규 / 신규",
       "selectedScope": "GL · TH · 현지화 · 정규 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -721,7 +721,7 @@
       "file": "90_GL_TH_localized_dubbing_course.png",
       "label": "GL / TH / 현지화 / 더빙 / 코스",
       "selectedScope": "GL · TH · 현지화 · 더빙 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -729,7 +729,7 @@
       "file": "91_GL_TH_localized_dubbing_signature.png",
       "label": "GL / TH / 현지화 / 더빙 / 시그니처",
       "selectedScope": "GL · TH · 현지화 · 더빙 · 시그니처 · 전체",
-      "taskCount": "17개",
+      "taskCount": "12개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -737,7 +737,7 @@
       "file": "92_GL_TH_localized_dubbing_dictionary.png",
       "label": "GL / TH / 현지화 / 더빙 / 딕셔너리",
       "selectedScope": "GL · TH · 현지화 · 더빙 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -745,7 +745,7 @@
       "file": "93_GL_TH_localized_dubbing_asset.png",
       "label": "GL / TH / 현지화 / 더빙 / 에셋",
       "selectedScope": "GL · TH · 현지화 · 더빙 · 에셋 · 전체",
-      "taskCount": "15개",
+      "taskCount": "9개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -753,7 +753,7 @@
       "file": "94_GL_TH_localized_dubbing_class.png",
       "label": "GL / TH / 현지화 / 더빙 / 클래스",
       "selectedScope": "GL · TH · 현지화 · 더빙 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -761,15 +761,15 @@
       "file": "95_GL_TH_localized_dubbing_class-plus.png",
       "label": "GL / TH / 현지화 / 더빙 / 클래스 +",
       "selectedScope": "GL · TH · 현지화 · 더빙 · 클래스 + · 전체",
-      "taskCount": "15개",
-      "syncStatus": "DB 실시간 연동"
+      "taskCount": "10개",
+      "syncStatus": "DB 연동"
     },
     {
       "number": 96,
       "file": "96_GL_TH_localized_dubbing_project.png",
       "label": "GL / TH / 현지화 / 더빙 / 프로젝트",
       "selectedScope": "GL · TH · 현지화 · 더빙 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -777,7 +777,7 @@
       "file": "97_GL_TH_localized_dubbing_new.png",
       "label": "GL / TH / 현지화 / 더빙 / 신규",
       "selectedScope": "GL · TH · 현지화 · 더빙 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -785,7 +785,7 @@
       "file": "98_GL_TH_localized_extension_course.png",
       "label": "GL / TH / 현지화 / 확장 / 코스",
       "selectedScope": "GL · TH · 현지화 · 확장 · 코스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "8개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -793,7 +793,7 @@
       "file": "99_GL_TH_localized_extension_signature.png",
       "label": "GL / TH / 현지화 / 확장 / 시그니처",
       "selectedScope": "GL · TH · 현지화 · 확장 · 시그니처 · 전체",
-      "taskCount": "17개",
+      "taskCount": "10개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -801,7 +801,7 @@
       "file": "100_GL_TH_localized_extension_dictionary.png",
       "label": "GL / TH / 현지화 / 확장 / 딕셔너리",
       "selectedScope": "GL · TH · 현지화 · 확장 · 딕셔너리 · 전체",
-      "taskCount": "15개",
+      "taskCount": "8개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -809,7 +809,7 @@
       "file": "101_GL_TH_localized_extension_asset.png",
       "label": "GL / TH / 현지화 / 확장 / 에셋",
       "selectedScope": "GL · TH · 현지화 · 확장 · 에셋 · 전체",
-      "taskCount": "15개",
+      "taskCount": "7개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -817,7 +817,7 @@
       "file": "102_GL_TH_localized_extension_class.png",
       "label": "GL / TH / 현지화 / 확장 / 클래스",
       "selectedScope": "GL · TH · 현지화 · 확장 · 클래스 · 전체",
-      "taskCount": "15개",
+      "taskCount": "8개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -825,7 +825,7 @@
       "file": "103_GL_TH_localized_extension_class-plus.png",
       "label": "GL / TH / 현지화 / 확장 / 클래스 +",
       "selectedScope": "GL · TH · 현지화 · 확장 · 클래스 + · 전체",
-      "taskCount": "15개",
+      "taskCount": "8개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -833,7 +833,7 @@
       "file": "104_GL_TH_localized_extension_project.png",
       "label": "GL / TH / 현지화 / 확장 / 프로젝트",
       "selectedScope": "GL · TH · 현지화 · 확장 · 프로젝트 · 전체",
-      "taskCount": "15개",
+      "taskCount": "8개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -841,7 +841,7 @@
       "file": "105_GL_TH_localized_extension_new.png",
       "label": "GL / TH / 현지화 / 확장 / 신규",
       "selectedScope": "GL · TH · 현지화 · 확장 · 신규 · 전체",
-      "taskCount": "15개",
+      "taskCount": "8개",
       "syncStatus": "DB 실시간 연동"
     }
   ]

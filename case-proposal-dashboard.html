@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>운영 케이스 최소화 제안</title>
+    <link rel="stylesheet" href="./comparison-dashboard.css?v=20260517-case-proposal" />
+    <link rel="stylesheet" href="./case-proposal-dashboard.css?v=20260517-case-proposal" />
+  </head>
+  <body>
+    <main class="analysis-shell proposal-shell">
+      <header class="analysis-topbar">
+        <div>
+          <p class="eyebrow">Case Simplification Proposal</p>
+          <h1>운영 케이스 최소화 제안</h1>
+        </div>
+        <div class="top-actions">
+          <span class="sync-status is-local" id="syncStatus">로컬 기준</span>
+          <a class="ghost-button" href="./comparison-dashboard.html">공통화 분석</a>
+          <a class="ghost-button" href="./process-improvement-dashboard.html">프로세스 분석</a>
+          <a class="ghost-button" href="./">관리 대시보드</a>
+        </div>
+      </header>
+
+      <section class="summary-grid" id="summaryGrid" aria-label="제안 요약"></section>
+
+      <section class="analysis-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Recommended Model</p>
+            <h2>케이스 축을 줄이는 새 운영 구조</h2>
+          </div>
+          <span class="count-pill" id="proposalRuleCount">0개</span>
+        </div>
+        <div class="proposal-flow" id="proposalFlow"></div>
+      </section>
+
+      <section class="analysis-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Decision Axes</p>
+            <h2>국가, 코스 유형, 코스 포맷 처리 제안</h2>
+          </div>
+          <span class="count-pill">핵심 판단</span>
+        </div>
+        <div class="axis-grid" id="axisGrid"></div>
+      </section>
+
+      <section class="analysis-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Proposed Modules</p>
+            <h2>공통 템플릿과 옵션 모듈</h2>
+          </div>
+          <span class="count-pill" id="moduleCount">0개</span>
+        </div>
+        <div class="module-grid" id="moduleGrid"></div>
+      </section>
+
+      <section class="analysis-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Work Output Split</p>
+            <h2>업무 항목별 공통/옵션 분류</h2>
+          </div>
+          <span class="count-pill" id="workSplitCount">0개 업무</span>
+        </div>
+        <div class="table-wrap">
+          <table class="proposal-table">
+            <thead>
+              <tr>
+                <th>분류</th>
+                <th>업무</th>
+                <th>운영 범위</th>
+                <th>케이스 축에서 빼는 방식</th>
+              </tr>
+            </thead>
+            <tbody id="workSplitBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="analysis-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Rollout</p>
+            <h2>적용 순서</h2>
+          </div>
+          <span class="count-pill">4단계</span>
+        </div>
+        <div class="rollout-list" id="rolloutList"></div>
+      </section>
+    </main>
+
+    <script src="./config.js?v=20260507-hide-dubbing-filters"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./case-proposal-dashboard.js?v=20260517-case-proposal"></script>
+  </body>
+</html>

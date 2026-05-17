@@ -15,6 +15,11 @@ const args = new Set(process.argv.slice(2));
 const useLiveSync = args.has("--live-sync");
 const useAllDubbingCases = args.has("--all-dubbing");
 const useDubbingOnly = args.has("--only-dubbing");
+const filterLanguage = getArgValue("--language")?.toUpperCase() || "";
+const filterCourseType = getArgValue("--course-type") || "";
+const filterLocalizationType = getArgValue("--localization") || "";
+const hasCaseFilter =
+  useDubbingOnly || Boolean(filterLanguage || filterCourseType || filterLocalizationType);
 
 const courseFormats = [
   { label: "코스", slug: "course" },
@@ -109,7 +114,7 @@ async function captureSite(site) {
     console.log(`Captured ${fileName}`);
   }
 
-  const nextManifest = useDubbingOnly
+  const nextManifest = hasCaseFilter
     ? await mergeManifest(outputDir, site, manifest)
     : buildManifest(site, manifest);
 
@@ -126,7 +131,7 @@ async function prepareOutputDir(outputDir, caseEntries) {
   await fs.mkdir(outputDir, { recursive: true });
 
   const entries = await fs.readdir(outputDir).catch(() => []);
-  const removableEntries = useDubbingOnly
+  const removableEntries = hasCaseFilter
     ? new Set(caseEntries.map(({ number, screenshotCase }) => makeFileName(number, screenshotCase)))
     : new Set(
         entries.filter(
@@ -142,8 +147,15 @@ async function prepareOutputDir(outputDir, caseEntries) {
 }
 
 function shouldCaptureCase(screenshotCase) {
-  if (!useDubbingOnly) return true;
-  return screenshotCase.courseType === "현지화" && screenshotCase.localizationType === "더빙";
+  if (filterLanguage && screenshotCase.language.toUpperCase() !== filterLanguage) return false;
+  if (filterCourseType && screenshotCase.courseType !== filterCourseType) return false;
+  if (filterLocalizationType && screenshotCase.localizationType !== filterLocalizationType) {
+    return false;
+  }
+  if (useDubbingOnly) {
+    return screenshotCase.courseType === "현지화" && screenshotCase.localizationType === "더빙";
+  }
+  return true;
 }
 
 function buildManifest(site, cases) {
@@ -221,6 +233,11 @@ function getRequestedSites() {
   }
 
   return [...new Set(sites)];
+}
+
+function getArgValue(name) {
+  const arg = process.argv.slice(2).find((entry) => entry.startsWith(`${name}=`));
+  return arg ? arg.split("=").slice(1).join("=").trim() : "";
 }
 
 function buildCases(site) {

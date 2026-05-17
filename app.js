@@ -32,6 +32,7 @@ const localizationTypeOptions = ["폐강옵션", "정규", "더빙", "확장"];
 
 const guideLinks = [
   { label: "공통화 분석", url: "./comparison-dashboard.html" },
+  { label: "제안 케이스", url: "./case-proposal-dashboard.html" },
   { label: "KR", url: "" },
   { label: "JP", url: "" },
   { label: "GL", url: "" },
@@ -259,6 +260,13 @@ function normalizeBaseItems(baseItems) {
       output: "트레일러 썸네일",
       size: "",
     },
+    {
+      sourceColumn: "earlybird_close_organic",
+      phase: "얼리버드 마감",
+      group: "오가닉",
+      output: "얼리버드 마감 오가닉",
+      size: "",
+    },
   ];
 }
 
@@ -329,6 +337,10 @@ function withDefaults(item) {
 }
 
 function getDefaultWorkIncluded(item) {
+  if (isEarlybirdCloseOrganic(item)) {
+    return isEarlybirdCloseOrganicTarget(item) ? "O" : "X";
+  }
+
   if (item.group === "오가닉" && item.output === "연사용 스토리") {
     return item.phase === "얼리버드" ? "O" : "X";
   }
@@ -336,10 +348,27 @@ function getDefaultWorkIncluded(item) {
 }
 
 function getDefaultWorkOwner(item) {
+  if (isEarlybirdCloseOrganicTarget(item)) {
+    return "마케터";
+  }
+
   if (item.site === "KR" && item.group === "페이드" && item.output === "광고") {
     return "마케터";
   }
   return "";
+}
+
+function isEarlybirdCloseOrganic(item) {
+  return item.sourceColumn === "earlybird_close_organic";
+}
+
+function isEarlybirdCloseOrganicTarget(item) {
+  return (
+    isEarlybirdCloseOrganic(item) &&
+    item.site === "KR" &&
+    (item.courseType === "오리지널" ||
+      (item.courseType === "현지화" && item.localizationType === "정규"))
+  );
 }
 
 function getFileExtension(item) {
@@ -480,7 +509,7 @@ function renderFormatOptions() {
               item.localizationType === els.localizationTypeFilter.value)
         )
         .map((item) => item.phase)
-    )
+    ).sort((phaseA, phaseB) => getPhaseRank(phaseA) - getPhaseRank(phaseB))
   );
 }
 
@@ -681,7 +710,9 @@ function areDetailFiltersActive() {
 }
 
 function renderTimelineCards(selectedItems) {
-  const phaseEntries = [...groupBy(selectedItems, (item) => item.phase).entries()];
+  const phaseEntries = [...groupBy(selectedItems, (item) => item.phase).entries()].sort(
+    comparePhaseEntries
+  );
 
   return `
     <div class="timeline-dashboard">
@@ -832,6 +863,11 @@ function getPhaseTone(phase) {
       border: "#f3bfdc",
       ink: "#a95f88",
     },
+    "얼리버드 마감": {
+      color: "#fff1c7",
+      border: "#e2b34d",
+      ink: "#8a650f",
+    },
     영상공개: {
       color: "#e1ebff",
       border: "#bdceff",
@@ -868,6 +904,15 @@ function toneStyle(tone, type) {
   }
 
   return `--timeline-group-color: ${tone.color}; --timeline-group-border: ${tone.border}; --timeline-group-bg: ${tone.bg};`;
+}
+
+function comparePhaseEntries([phaseA], [phaseB]) {
+  return getPhaseRank(phaseA) - getPhaseRank(phaseB);
+}
+
+function getPhaseRank(phase) {
+  const index = ["얼리버드", "상세페이지 오픈", "얼리버드 마감", "영상공개"].indexOf(phase);
+  return index === -1 ? 99 : index;
 }
 
 function compareGroupEntries([groupA], [groupB]) {

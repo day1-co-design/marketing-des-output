@@ -220,6 +220,13 @@ function normalizeBaseItems(baseItems) {
       output: "트레일러 썸네일",
       size: "",
     },
+    {
+      sourceColumn: "earlybird_close_organic",
+      phase: "얼리버드 마감",
+      group: "오가닉",
+      output: "얼리버드 마감 오가닉",
+      size: "",
+    },
   ];
 }
 
@@ -290,6 +297,10 @@ function withDefaults(item) {
 }
 
 function getDefaultWorkIncluded(item) {
+  if (isEarlybirdCloseOrganic(item)) {
+    return isEarlybirdCloseOrganicTarget(item) ? "O" : "X";
+  }
+
   if (item.group === "오가닉" && item.output === "연사용 스토리") {
     return item.phase === "얼리버드" ? "O" : "X";
   }
@@ -297,10 +308,27 @@ function getDefaultWorkIncluded(item) {
 }
 
 function getDefaultWorkOwner(item) {
+  if (isEarlybirdCloseOrganicTarget(item)) {
+    return "마케터";
+  }
+
   if (item.site === "KR" && item.group === "페이드" && item.output === "광고") {
     return "마케터";
   }
   return "";
+}
+
+function isEarlybirdCloseOrganic(item) {
+  return item.sourceColumn === "earlybird_close_organic";
+}
+
+function isEarlybirdCloseOrganicTarget(item) {
+  return (
+    isEarlybirdCloseOrganic(item) &&
+    item.site === "KR" &&
+    (item.courseType === "오리지널" ||
+      (item.courseType === "현지화" && item.localizationType === "정규"))
+  );
 }
 
 function getFileExtension() {
@@ -500,7 +528,11 @@ function getScopeState(scope, definition) {
 function getScopeStateReason(scope, definition, state) {
   if (state === "available") return "";
   if (state === "discussion") {
-    if (["KR", "JP"].includes(scope.site) && definition.localizationType === "더빙") {
+    if (
+      scope.site === "KR" &&
+      definition.courseType === "현지화" &&
+      definition.localizationType === "더빙"
+    ) {
       return "더빙 기준 확정 전";
     }
     if (scope.site === "GL" && scope.language === "TH" && definition.courseType === "오리지널") {
@@ -513,7 +545,7 @@ function getScopeStateReason(scope, definition, state) {
 
 function isDiscussionScope(scope, definition) {
   return (
-    (["KR", "JP"].includes(scope.site) &&
+    (scope.site === "KR" &&
       definition.courseType === "현지화" &&
       definition.localizationType === "더빙") ||
     (scope.site === "GL" && scope.language === "TH" && definition.courseType === "오리지널")
@@ -2075,7 +2107,8 @@ function getLocalizationRank(value) {
 }
 
 function getPhaseRank(phase) {
-  return ["얼리버드", "상세페이지 오픈", "영상공개"].indexOf(phase);
+  const index = ["얼리버드", "상세페이지 오픈", "얼리버드 마감", "영상공개"].indexOf(phase);
+  return index === -1 ? 99 : index;
 }
 
 function getGroupRank(group) {

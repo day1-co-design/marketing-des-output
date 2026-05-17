@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-07T12:10:42.609Z",
+  "generatedAt": "2026-05-13T00:52:31.624Z",
   "source": "dashboard-with-live-sync",
   "site": "JP",
   "caseCount": 32,
@@ -73,7 +73,7 @@
       "file": "09_JP_localized_closed-option_course.png",
       "label": "JP / 현지화 / 폐강옵션 / 코스",
       "selectedScope": "JP · 현지화 · 폐강옵션 · 코스 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -81,7 +81,7 @@
       "file": "10_JP_localized_closed-option_signature.png",
       "label": "JP / 현지화 / 폐강옵션 / 시그니처",
       "selectedScope": "JP · 현지화 · 폐강옵션 · 시그니처 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -89,15 +89,15 @@
       "file": "11_JP_localized_closed-option_dictionary.png",
       "label": "JP / 현지화 / 폐강옵션 / 딕셔너리",
       "selectedScope": "JP · 현지화 · 폐강옵션 · 딕셔너리 · 전체",
-      "taskCount": "18개",
-      "syncStatus": "DB 연동"
+      "taskCount": "15개",
+      "syncStatus": "DB 실시간 연동"
     },
     {
       "number": 12,
       "file": "12_JP_localized_closed-option_asset.png",
       "label": "JP / 현지화 / 폐강옵션 / 에셋",
       "selectedScope": "JP · 현지화 · 폐강옵션 · 에셋 · 전체",
-      "taskCount": "18개",
+      "taskCount": "14개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -105,7 +105,7 @@
       "file": "13_JP_localized_closed-option_class.png",
       "label": "JP / 현지화 / 폐강옵션 / 클래스",
       "selectedScope": "JP · 현지화 · 폐강옵션 · 클래스 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -113,7 +113,7 @@
       "file": "14_JP_localized_closed-option_class-plus.png",
       "label": "JP / 현지화 / 폐강옵션 / 클래스 +",
       "selectedScope": "JP · 현지화 · 폐강옵션 · 클래스 + · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -121,7 +121,7 @@
       "file": "15_JP_localized_closed-option_project.png",
       "label": "JP / 현지화 / 폐강옵션 / 프로젝트",
       "selectedScope": "JP · 현지화 · 폐강옵션 · 프로젝트 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -129,7 +129,7 @@
       "file": "16_JP_localized_closed-option_new.png",
       "label": "JP / 현지화 / 폐강옵션 / 신규",
       "selectedScope": "JP · 현지화 · 폐강옵션 · 신규 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -137,7 +137,7 @@
       "file": "17_JP_localized_regular_course.png",
       "label": "JP / 현지화 / 정규 / 코스",
       "selectedScope": "JP · 현지화 · 정규 · 코스 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -145,7 +145,7 @@
       "file": "18_JP_localized_regular_signature.png",
       "label": "JP / 현지화 / 정규 / 시그니처",
       "selectedScope": "JP · 현지화 · 정규 · 시그니처 · 전체",
-      "taskCount": "20개",
+      "taskCount": "17개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -153,7 +153,7 @@
       "file": "19_JP_localized_regular_dictionary.png",
       "label": "JP / 현지화 / 정규 / 딕셔너리",
       "selectedScope": "JP · 현지화 · 정규 · 딕셔너리 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -161,7 +161,7 @@
       "file": "20_JP_localized_regular_asset.png",
       "label": "JP / 현지화 / 정규 / 에셋",
       "selectedScope": "JP · 현지화 · 정규 · 에셋 · 전체",
-      "taskCount": "18개",
+      "taskCount": "14개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -169,7 +169,7 @@
       "file": "21_JP_localized_regular_class.png",
       "label": "JP / 현지화 / 정규 / 클래스",
       "selectedScope": "JP · 현지화 · 정규 · 클래스 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -177,7 +177,7 @@
       "file": "22_JP_localized_regular_class-plus.png",
       "label": "JP / 현지화 / 정규 / 클래스 +",
       "selectedScope": "JP · 현지화 · 정규 · 클래스 + · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -185,15 +185,15 @@
       "file": "23_JP_localized_regular_project.png",
       "label": "JP / 현지화 / 정규 / 프로젝트",
       "selectedScope": "JP · 현지화 · 정규 · 프로젝트 · 전체",
-      "taskCount": "18개",
-      "syncStatus": "DB 연동"
+      "taskCount": "15개",
+      "syncStatus": "DB 실시간 연동"
     },
     {
       "number": 24,
       "file": "24_JP_localized_regular_new.png",
       "label": "JP / 현지화 / 정규 / 신규",
       "selectedScope": "JP · 현지화 · 정규 · 신규 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -201,7 +201,7 @@
       "file": "25_JP_localized_dubbing_course.png",
       "label": "JP / 현지화 / 더빙 / 코스",
       "selectedScope": "JP · 현지화 · 더빙 · 코스 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -209,7 +209,7 @@
       "file": "26_JP_localized_dubbing_signature.png",
       "label": "JP / 현지화 / 더빙 / 시그니처",
       "selectedScope": "JP · 현지화 · 더빙 · 시그니처 · 전체",
-      "taskCount": "20개",
+      "taskCount": "17개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -217,7 +217,7 @@
       "file": "27_JP_localized_dubbing_dictionary.png",
       "label": "JP / 현지화 / 더빙 / 딕셔너리",
       "selectedScope": "JP · 현지화 · 더빙 · 딕셔너리 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -225,7 +225,7 @@
       "file": "28_JP_localized_dubbing_asset.png",
       "label": "JP / 현지화 / 더빙 / 에셋",
       "selectedScope": "JP · 현지화 · 더빙 · 에셋 · 전체",
-      "taskCount": "18개",
+      "taskCount": "14개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -233,7 +233,7 @@
       "file": "29_JP_localized_dubbing_class.png",
       "label": "JP / 현지화 / 더빙 / 클래스",
       "selectedScope": "JP · 현지화 · 더빙 · 클래스 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -241,7 +241,7 @@
       "file": "30_JP_localized_dubbing_class-plus.png",
       "label": "JP / 현지화 / 더빙 / 클래스 +",
       "selectedScope": "JP · 현지화 · 더빙 · 클래스 + · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -249,7 +249,7 @@
       "file": "31_JP_localized_dubbing_project.png",
       "label": "JP / 현지화 / 더빙 / 프로젝트",
       "selectedScope": "JP · 현지화 · 더빙 · 프로젝트 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     },
     {
@@ -257,7 +257,7 @@
       "file": "32_JP_localized_dubbing_new.png",
       "label": "JP / 현지화 / 더빙 / 신규",
       "selectedScope": "JP · 현지화 · 더빙 · 신규 · 전체",
-      "taskCount": "18개",
+      "taskCount": "15개",
       "syncStatus": "DB 실시간 연동"
     }
   ]
